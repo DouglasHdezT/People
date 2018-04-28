@@ -10,11 +10,12 @@ import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.SearchView;
-import android.widget.Toast;
+
+import com.debugps.people.data.Contact;
+import com.debugps.people.fragments.MainFragment;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -22,20 +23,22 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    public final int ID_DEFAULT_KEY = 1;
-    public final int ID_FAV_KEY = 2;
-    public final int ID_RECENT_KEY = 3;
+    public static final int ID_DEFAULT_KEY = 1;
+    public static final int ID_FAV_KEY = 2;
+    public static final int ID_RECENT_KEY = 3;
 
-    private ArrayList<Contact> contacts_list;
-    private ArrayList<Contact> contactsFav_list;
-    private ArrayList<Contact> contactsRecent_list;
+    private ArrayList<Contact> contacts_list = new ArrayList<>();
+    private ArrayList<Contact> contactsFav_list = new ArrayList<>();
+    private ArrayList<Contact> contactsRecent_list = new ArrayList<>();
 
-
+    private MainFragment mainFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        addContacts();
 
 
     }
@@ -61,13 +64,13 @@ public class MainActivity extends AppCompatActivity {
         s.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(getApplicationContext(),query,Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),query,Toast.LENGTH_SHORT).show();
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                Toast.makeText(getApplicationContext(),newText,Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),newText,Toast.LENGTH_SHORT).show();
                 return true;
             }
         });

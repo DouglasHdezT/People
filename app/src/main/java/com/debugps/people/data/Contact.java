@@ -1,4 +1,4 @@
-package com.debugps.people;
+package com.debugps.people.data;
 
 import android.graphics.Bitmap;
 
@@ -7,7 +7,6 @@ public class Contact {
     private String name;
     private String phoneNumbers;
     private String email;
-    private String address;
     private String birthday;
     private boolean favorite;
     private Bitmap profileImage;
@@ -15,11 +14,10 @@ public class Contact {
     public Contact() {
     }
 
-    public Contact(String name, String phoneNumbers, String email, String address, String birthday, boolean favorite, Bitmap profileImage) {
+    public Contact(String name, String phoneNumbers, String email, String birthday, boolean favorite, Bitmap profileImage) {
         this.name = name;
         this.phoneNumbers = phoneNumbers;
         this.email = email;
-        this.address = address;
         this.birthday = birthday;
         this.favorite = favorite;
         this.profileImage = profileImage;
@@ -47,14 +45,6 @@ public class Contact {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public String getBirthday() {

@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">People</string>
     <string name="search_title">Search...</string>
+
+    <string name="card_view_default_name_text">name</string>
 </resources>

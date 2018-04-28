@@ -1,4 +1,4 @@
-package com.debugps.people;
+package com.debugps.people.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
