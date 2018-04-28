@@ -1,4 +1,4 @@
-package com.debugps.people.data;
+package com.debugps.people;
 
 import android.graphics.Bitmap;
 
