@@ -12,11 +12,10 @@ import android.widget.TextView;
 
 import com.debugps.people.R;
 import com.debugps.people.data.Contact;
-import com.debugps.people.interfaces.ComunicationInterface;
 
 import java.util.ArrayList;
 
-public abstract class ContactsFavoritesAdapter extends RecyclerView.Adapter<ContactsFavoritesAdapter.ContactsViewHolder> implements ComunicationInterface{
+public abstract class ContactsFavoritesAdapter extends RecyclerView.Adapter<ContactsFavoritesAdapter.ContactsViewHolder>{
 
     private ArrayList<Contact> contacts_list;
 
@@ -52,7 +51,7 @@ public abstract class ContactsFavoritesAdapter extends RecyclerView.Adapter<Cont
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ContactsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ContactsViewHolder holder, final int position) {
         boolean isFavorited =  contacts_list.get(position).isFavorite();
 
         if(isFavorited){
@@ -65,6 +64,13 @@ public abstract class ContactsFavoritesAdapter extends RecyclerView.Adapter<Cont
         holder.capLetter.setText(contacts_list.get(position).getName().charAt(0)+"");
         holder.name.setText(contacts_list.get(position).getName());
 
+        holder.starFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                remover(position);
+            }
+        });
+
     }
 
     @Override
@@ -72,5 +78,5 @@ public abstract class ContactsFavoritesAdapter extends RecyclerView.Adapter<Cont
         return contacts_list.size();
     }
 
-
+    public abstract void remover(int index);
 }

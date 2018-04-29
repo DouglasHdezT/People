@@ -53,8 +53,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     private ContactsDefaultAdapter contactsDefaultAdapter;
     private ContactsFavoritesAdapter contactsFavoritesAdapter;
 
-    private ContactsLandscapeAdapter contactsLandscapeAdapter_default;
-
     private MainFragment mainFragment = new MainFragment();
 
     @Override
@@ -133,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 contactsFav_list.add(contacts_list.get(position));
                 favPosition = contactsFav_list.indexOf(contacts_list.get(position));
                 contactsFavoritesAdapter.notifyItemInserted(favPosition);
-                Toast.makeText(getApplicationContext(),"Llegue", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),"Llegue", Toast.LENGTH_SHORT).show();
                 contactsFavoritesAdapter.notifyDataSetChanged();
                 sortList(contactsFav_list);
                 contactsFavoritesAdapter.notifyItemRangeChanged(0,contactsFav_list.size());
@@ -152,17 +150,20 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
         contactsFavoritesAdapter = new ContactsFavoritesAdapter(contactsFav_list) {
             @Override
-            public void agregar(int position) {
-
-            }
-
-            @Override
             public void remover(int position) {
+                Contact cFav=  contactsFav_list.get(position);
+                int posD = contacts_list.indexOf(cFav);
+
+                contacts_list.get(posD).setFavorite(false);
+                contactsDefaultAdapter.notifyItemChanged(posD);
+
+                contactsFav_list.remove(position);
+                contactsFavoritesAdapter.notifyItemRemoved(position);
+                contactsFavoritesAdapter.notifyItemRangeChanged(position, contactsFav_list.size());
 
             }
         };
 
-        contactsLandscapeAdapter_default = new ContactsLandscapeAdapter(contacts_list);
     }
 
     /*
