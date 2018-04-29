@@ -226,11 +226,102 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                     }
                     emailCursor.close();
 
+                    contact.setColorId(getColorId(contact.getName().toUpperCase().charAt(0)));
+
                     contacts_list.add(contact);
 
                 }
             }
         }
+    }
+
+    private static int getColorId(char letra){
+        int idColor=R.color.MaterialDeepPurple900;
+        switch (letra){
+            case 'A':
+                idColor = R.color.MaterialBlue900;
+                break;
+            case 'B':
+                idColor = R.color.MaterialRed900;
+                break;
+            case 'C':
+                idColor = R.color.MaterialPurple900;
+                break;
+            case 'D':
+                idColor = R.color.MaterialBlueGrey900;
+                break;
+            case 'E':
+                idColor = R.color.MaterialCyan900;
+                break;
+            case 'F':
+                idColor = R.color.MaterialIndigo900;
+                break;
+            case 'G':
+                idColor = R.color.MaterialLime900;
+                break;
+            case 'H':
+                idColor = R.color.MaterialBrown900;
+                break;
+            case 'I':
+                idColor = R.color.MaterialOrange900;
+                break;
+            case 'J':
+                idColor = R.color.MaterialPink900;
+                break;
+            case 'K':
+                idColor = R.color.MaterialTeal900;
+                break;
+            case 'L':
+                idColor = R.color.MaterialLightGreen900;
+                break;
+            case 'M':
+                idColor = R.color.MaterialLightBlue900;
+                break;
+            case 'N':
+                idColor = R.color.MaterialGreen900;
+                break;
+            case 'Ñ':
+                idColor = R.color.MaterialBlueGrey900;
+                break;
+            case 'O':
+                idColor = R.color.MaterialGrey900;
+                break;
+            case 'P':
+                idColor = R.color.MaterialBlue900;
+                break;
+            case 'Q':
+                idColor = R.color.MaterialRed900;
+                break;
+            case 'R':
+                idColor = R.color.MaterialPink900;
+                break;
+            case 'S':
+                idColor = R.color.MaterialPurple900;
+                break;
+            case 'T':
+                idColor = R.color.MaterialOrange900;
+                break;
+            case 'U':
+                idColor = R.color.MaterialCyan900;
+                break;
+            case 'V':
+                idColor = R.color.MaterialTeal900;
+                break;
+            case 'W':
+                idColor = R.color.MaterialIndigo900;
+                break;
+            case 'X':
+                idColor = R.color.MaterialDeepOrange900;
+                break;
+            case 'Y':
+                idColor = R.color.MaterialLightBlue900;
+                break;
+            case 'Z':
+                idColor = R.color.MaterialLime900;
+                break;
+        }
+
+        return idColor;
     }
 
     public void EnableRuntimePermission(){

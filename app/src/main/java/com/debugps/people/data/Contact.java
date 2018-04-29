@@ -10,17 +10,19 @@ public class Contact {
     private String birthday;
     private boolean favorite;
     private Bitmap profileImage;
+    private int colorId;
 
     public Contact() {
     }
 
-    public Contact(String name, String phoneNumbers, String email, String birthday, boolean favorite, Bitmap profileImage) {
+    public Contact(String name, String phoneNumbers, String email, String birthday, boolean favorite, Bitmap profileImage, int colorId) {
         this.name = name;
         this.phoneNumbers = phoneNumbers;
         this.email = email;
         this.birthday = birthday;
         this.favorite = favorite;
         this.profileImage = profileImage;
+        this.colorId = colorId;
     }
 
     public String getName() {
@@ -69,5 +71,13 @@ public class Contact {
 
     public void setProfileImage(Bitmap profileImage) {
         this.profileImage = profileImage;
+    }
+
+    public int getColorId() {
+        return colorId;
+    }
+
+    public void setColorId(int colorId) {
+        this.colorId = colorId;
     }
 }

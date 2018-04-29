@@ -5,4 +5,25 @@
     <color name="colorPrimaryText">#3d5afe</color>
     <color name="colorAccent">#FF4081</color>
     <color name="default_pp_color">#c5cae9</color>
+    
+    
+    <color name="MaterialRed900">#B71C1C</color>
+    <color name="MaterialPink900">#880E4F</color>
+    <color name="MaterialPurple900">#4A148C</color>
+    <color name="MaterialDeepPurple900">#311B92</color>
+    <color name="MaterialIndigo900">#1A237E</color>
+    <color name="MaterialBlue900">#0D47A1</color>
+    <color name="MaterialLightBlue900">#01579B</color>
+    <color name="MaterialCyan900">#006064</color>
+    <color name="MaterialTeal900">#004D40</color>
+    <color name="MaterialGreen900">#1B5E20</color>
+    <color name="MaterialLightGreen900">#33691E</color>
+    <color name="MaterialLime900">#827717</color>
+    <color name="MaterialOrange900">#E65100</color>
+    <color name="MaterialDeepOrange900">#BF360C</color>
+    <color name="MaterialBrown900">#3E2723</color>
+    <color name="MaterialGrey900">#212121</color>
+    <color name="MaterialBlueGrey900">#263238</color>
+
+    
 </resources>
