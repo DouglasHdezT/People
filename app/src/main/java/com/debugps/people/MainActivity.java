@@ -22,8 +22,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.debugps.people.adapters.ContactsDefaultAdapter;
+import com.debugps.people.adapters.ContactsFavoritesAdapter;
 import com.debugps.people.adapters.ContactsLandscapeAdapter;
 import com.debugps.people.data.Contact;
 import com.debugps.people.fragments.ContactListFragment;
@@ -42,17 +44,16 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     public static final int ID_RECENT_KEY = 3;
 
     public static final String KEY_SAVED_INSTANCE_STATE = "ADustlandFairytale";
+    public static final String KEY_SAVED_INSTANCE_STATE_FAV = "ShotMeAtTheNight";
 
     private ArrayList<Contact> contacts_list = new ArrayList<>();
     private ArrayList<Contact> contactsFav_list = new ArrayList<>();
     private ArrayList<Contact> contactsRecent_list = new ArrayList<>();
 
     private ContactsDefaultAdapter contactsDefaultAdapter;
+    private ContactsFavoritesAdapter contactsFavoritesAdapter;
 
     private ContactsLandscapeAdapter contactsLandscapeAdapter_default;
-
-    private LinearLayoutManager linearLayoutManager;
-    private GridLayoutManager gridLayoutManager;
 
     private MainFragment mainFragment = new MainFragment();
 
@@ -65,21 +66,14 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
         if(savedInstanceState != null){
             contacts_list= (ArrayList<Contact>) savedInstanceState.getSerializable(KEY_SAVED_INSTANCE_STATE);
+            contactsFav_list= (ArrayList<Contact>) savedInstanceState.getSerializable(KEY_SAVED_INSTANCE_STATE_FAV);
         }else{
             addContacts();
         }
 
-        Collections.sort(contacts_list, new Comparator<Contact>() {
-            @Override
-            public int compare(Contact o1, Contact o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
+        sortList(contacts_list);
 
         setAdapters();
-
-        linearLayoutManager = new LinearLayoutManager(getApplicationContext());
-        gridLayoutManager = new GridLayoutManager(getApplicationContext(),2);
 
         FragmentTransaction fragmentTransaction= getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.tab_list_container_main, mainFragment);
@@ -95,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putSerializable(KEY_SAVED_INSTANCE_STATE, contacts_list);
+        outState.putSerializable(KEY_SAVED_INSTANCE_STATE_FAV, contactsFav_list);
         super.onSaveInstanceState(outState);
     }
 
@@ -103,20 +98,25 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
      */
 
     @Override
-    public void OnBindAdapter(RecyclerView rv, int id_type_of_fragment) {
+    public void OnBindAdapter(RecyclerView rv, int id_type_of_fragment, LinearLayoutManager l, GridLayoutManager g) {
         switch(id_type_of_fragment){
 
             case ID_DEFAULT_KEY:
                 if(isLandscape()){
-                    rv.setLayoutManager(linearLayoutManager);
-                    rv.setAdapter(contactsLandscapeAdapter_default);
+                    rv.setLayoutManager(l);
                 }else{
-                    rv.setLayoutManager(gridLayoutManager);
-                    rv.setAdapter(contactsDefaultAdapter);
+                    rv.setLayoutManager(g);
                 }
+                rv.setAdapter(contactsDefaultAdapter);
                 break;
 
             case ID_FAV_KEY:
+                if(isLandscape()){
+                    rv.setLayoutManager(l);
+                }else{
+                    rv.setLayoutManager(g);
+                }
+                rv.setAdapter(contactsFavoritesAdapter);
                 break;
 
             case ID_RECENT_KEY:
@@ -126,7 +126,41 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
 
     private void setAdapters(){
-        contactsDefaultAdapter = new ContactsDefaultAdapter(contacts_list);
+        contactsDefaultAdapter = new ContactsDefaultAdapter(contacts_list, isLandscape()) {
+            @Override
+            public void agregar(int position) {
+                int favPosition;
+                contactsFav_list.add(contacts_list.get(position));
+                favPosition = contactsFav_list.indexOf(contacts_list.get(position));
+                contactsFavoritesAdapter.notifyItemInserted(favPosition);
+                Toast.makeText(getApplicationContext(),"Llegue", Toast.LENGTH_SHORT).show();
+                contactsFavoritesAdapter.notifyDataSetChanged();
+                sortList(contactsFav_list);
+                contactsFavoritesAdapter.notifyItemRangeChanged(0,contactsFav_list.size());
+            }
+
+            @Override
+            public void remover(int position) {
+                Contact c = contacts_list.get(position);
+                int favPosition = contactsFav_list.indexOf(c);
+                contactsFav_list.remove(favPosition);
+                contactsFavoritesAdapter.notifyItemRemoved(favPosition);
+                contactsFavoritesAdapter.notifyItemRangeChanged(favPosition, contactsFav_list.size());
+                notifyDataSetChanged();
+            }
+        };
+
+        contactsFavoritesAdapter = new ContactsFavoritesAdapter(contactsFav_list) {
+            @Override
+            public void agregar(int position) {
+
+            }
+
+            @Override
+            public void remover(int position) {
+
+            }
+        };
 
         contactsLandscapeAdapter_default = new ContactsLandscapeAdapter(contacts_list);
     }
@@ -359,6 +393,17 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         }else{
             return true;
         }
+    }
+
+    public static ArrayList<Contact> sortList(ArrayList<Contact> list){
+        Collections.sort(list, new Comparator<Contact>() {
+            @Override
+            public int compare(Contact o1, Contact o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+
+        return list;
     }
 
 

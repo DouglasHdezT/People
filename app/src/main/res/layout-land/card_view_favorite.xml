@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
+    android:layout_height="100dp"
     android:elevation="7dp"
     app:cardUseCompatPadding="true"
     app:cardCornerRadius="4dp">
@@ -20,10 +20,10 @@
             android:id="@+id/card_view_favorites_cap_letter"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2.5"
+            android:layout_weight="2"
             android:gravity="center"
             android:textAllCaps="true"
-            android:textSize="56sp"
+            android:textSize="40sp"
             android:textStyle="bold"
             android:textColor="@android:color/white"
             android:text="@string/card_view_cap_letter"
@@ -42,7 +42,7 @@
                 android:layout_marginLeft="8dp"
                 android:textAllCaps="true"
                 android:textSize="12sp"
-                android:gravity="center_vertical"
+                android:gravity="top"
                 android:textColor="@android:color/white"
                 android:text="@string/card_view_default_name_text"/>
 

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,8 @@ public class ContactListFragment extends Fragment {
 
     //Interfaz Que permite settear los adpters desde el mainFragment
     private OnBindAdapter binderAdapter;
+    private GridLayoutManager gridLayoutManager;
+    private LinearLayoutManager linearLayoutManager;
 
     public ContactListFragment() {}
 
@@ -41,10 +44,12 @@ public class ContactListFragment extends Fragment {
         View view = inflater.inflate(R.layout.recycle_view_contacts_list, container, false);
 
         rv = view.findViewById(R.id.recycle_view_main);
+        linearLayoutManager = new LinearLayoutManager(getContext());
+        gridLayoutManager = new GridLayoutManager(getContext(),2);
 
         rv.setHasFixedSize(true);
 
-        binderAdapter.OnBindAdapter(rv,id_type_of_fragment);
+        binderAdapter.OnBindAdapter(rv,id_type_of_fragment, linearLayoutManager, gridLayoutManager);
         return view;
     }
 
@@ -70,6 +75,6 @@ public class ContactListFragment extends Fragment {
     }
 
     public interface OnBindAdapter{
-        void OnBindAdapter(RecyclerView rv, int id_type_of_fragment);
+        void OnBindAdapter(RecyclerView rv, int id_type_of_fragment, LinearLayoutManager l, GridLayoutManager g);
     }
 }

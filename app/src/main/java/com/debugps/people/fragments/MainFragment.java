@@ -40,8 +40,10 @@ public class MainFragment extends Fragment {
         mViewPager = view.findViewById(R.id.viewpager_main);
 
         ContactListFragment contactListFragment_default = ContactListFragment.newInstance(MainActivity.ID_DEFAULT_KEY);
+        ContactListFragment contactListFragment_favorites = ContactListFragment.newInstance(MainActivity.ID_FAV_KEY);
 
         pagerAdapter.addFragmentToList(contactListFragment_default,"Contactos");
+        pagerAdapter.addFragmentToList(contactListFragment_favorites,"Favorites");
 
         mViewPager.setAdapter(pagerAdapter);
 
