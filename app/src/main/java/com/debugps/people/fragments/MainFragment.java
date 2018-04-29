@@ -13,15 +13,8 @@ import android.view.ViewGroup;
 import com.debugps.people.MainActivity;
 import com.debugps.people.R;
 import com.debugps.people.adapters.MainPagerAdapter;
-import com.debugps.people.data.Contact;
 
-import java.util.ArrayList;
-
-public class MainFragment extends Fragment{
-
-    private ArrayList<Contact> contacts_list;
-    private ArrayList<Contact> contactsFav_list;
-    private ArrayList<Contact> contactsRecent_list;
+public class MainFragment extends Fragment {
 
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
@@ -30,13 +23,6 @@ public class MainFragment extends Fragment{
 
 
     public MainFragment() {
-    }
-
-    public static MainFragment newInstance(){
-        MainFragment frag =  new MainFragment();
-
-
-        return frag;
     }
 
     @Override
@@ -53,9 +39,9 @@ public class MainFragment extends Fragment{
         mTabLayout = view.findViewById(R.id.tablayout_main);
         mViewPager = view.findViewById(R.id.viewpager_main);
 
-        FragmentContactList fragmentContactList_default = FragmentContactList.newInstance(MainActivity.ID_DEFAULT_KEY);
+        ContactListFragment contactListFragment_default = ContactListFragment.newInstance(MainActivity.ID_DEFAULT_KEY);
 
-        pagerAdapter.addFragmentToList(fragmentContactList_default,"");
+        pagerAdapter.addFragmentToList(contactListFragment_default,"Contactos");
 
         mViewPager.setAdapter(pagerAdapter);
 
@@ -64,15 +50,4 @@ public class MainFragment extends Fragment{
         return view;
     }
 
-    public void setContacts_list(ArrayList<Contact> contacts_list) {
-        this.contacts_list = contacts_list;
-    }
-
-    public void setContactsFav_list(ArrayList<Contact> contactsFav_list) {
-        this.contactsFav_list = contactsFav_list;
-    }
-
-    public void setContactsRecent_list(ArrayList<Contact> contactsRecent_list) {
-        this.contactsRecent_list = contactsRecent_list;
-    }
 }

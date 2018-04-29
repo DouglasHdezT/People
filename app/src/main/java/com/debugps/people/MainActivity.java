@@ -8,20 +8,24 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.SearchView;
 
+import com.debugps.people.adapters.ContactsDefaultAdapter;
 import com.debugps.people.data.Contact;
+import com.debugps.people.fragments.ContactListFragment;
 import com.debugps.people.fragments.MainFragment;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ContactListFragment.OnBindAdapter {
 
     public static final int ID_DEFAULT_KEY = 1;
     public static final int ID_FAV_KEY = 2;
@@ -30,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Contact> contacts_list = new ArrayList<>();
     private ArrayList<Contact> contactsFav_list = new ArrayList<>();
     private ArrayList<Contact> contactsRecent_list = new ArrayList<>();
+
+    private ContactsDefaultAdapter contactsDefaultAdapter;
 
     private MainFragment mainFragment;
 
@@ -40,12 +46,37 @@ public class MainActivity extends AppCompatActivity {
 
         addContacts();
 
+        contactsDefaultAdapter = new ContactsDefaultAdapter(contacts_list,contactsFav_list);
+
+        mainFragment = new MainFragment();
+
+        FragmentTransaction fragmentTransaction= getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.tab_list_container_main, mainFragment);
+
+        fragmentTransaction.commit();
+
+
 
     }
 
+    /*
+    Metodo que implementado para poder setter adpter a los recycler views desde main
+     */
 
+    @Override
+    public void OnBindAdapter(RecyclerView rv, int id_type_of_fragment) {
+        switch(id_type_of_fragment){
+            case ID_DEFAULT_KEY:
+                rv.setAdapter(contactsDefaultAdapter);
+                break;
 
+            case ID_FAV_KEY:
+                break;
 
+            case ID_RECENT_KEY:
+                break;
+        }
+    }
 
     /*
     Inflando el boton de busqueda en la ActionBar...
@@ -148,5 +179,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 }
 
