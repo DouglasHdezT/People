@@ -65,7 +65,12 @@ public class ContactsDefaultAdapter extends RecyclerView.Adapter<ContactsDefault
             holder.starFavorite.setImageResource(R.drawable.star_default);
         }
 
-        holder.profilePhoto.setImageBitmap(contacts.get(position).getProfileImage());
+        if(contacts.get(position).getProfileImage()==null){
+            holder.profilePhoto.setImageResource(R.drawable.ic_person);
+        }else{
+            holder.profilePhoto.setImageBitmap(contacts.get(position).getProfileImage());
+        }
+
         holder.name.setText(contacts.get(position).getName());
 
         holder.starFavorite.setOnClickListener(new View.OnClickListener() {
