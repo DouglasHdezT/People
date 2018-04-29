@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.PersistableBundle;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
@@ -29,13 +30,16 @@ import com.debugps.people.fragments.MainFragment;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class MainActivity extends AppCompatActivity implements ContactListFragment.OnBindAdapter {
 
     public static final int ID_DEFAULT_KEY = 1;
     public static final int ID_FAV_KEY = 2;
     public static final int ID_RECENT_KEY = 3;
-    public  static final int RequestPermissionCode  = 1 ;
+
+    public static final String KEY_SAVED_INSTANCE_STATE = "ADustlandFairytale";
 
     private ArrayList<Contact> contacts_list = new ArrayList<>();
     private ArrayList<Contact> contactsFav_list = new ArrayList<>();
@@ -52,7 +56,20 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
         EnableRuntimePermission();
 
-        addContacts();
+        if(savedInstanceState != null){
+            contacts_list= (ArrayList<Contact>) savedInstanceState.getSerializable(KEY_SAVED_INSTANCE_STATE);
+        }else{
+            addContacts();
+        }
+
+
+
+        Collections.sort(contacts_list, new Comparator<Contact>() {
+            @Override
+            public int compare(Contact o1, Contact o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
 
         contactsDefaultAdapter = new ContactsDefaultAdapter(contacts_list,contactsFav_list);
 
@@ -60,8 +77,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         fragmentTransaction.replace(R.id.tab_list_container_main, mainFragment);
 
         fragmentTransaction.commit();
-
-
 
     }
 
@@ -83,6 +98,17 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 break;
         }
     }
+
+    /*
+    Asegurando que se
+     */
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(KEY_SAVED_INSTANCE_STATE, contacts_list);
+        super.onSaveInstanceState(outState);
+    }
+
 
     /*
     Inflando el boton de busqueda en la ActionBar...
