@@ -5,10 +5,10 @@ import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.PersistableBundle;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
@@ -16,13 +16,15 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.debugps.people.adapters.ContactsDefaultAdapter;
+import com.debugps.people.adapters.ContactsLandscapeAdapter;
 import com.debugps.people.data.Contact;
 import com.debugps.people.fragments.ContactListFragment;
 import com.debugps.people.fragments.MainFragment;
@@ -47,6 +49,11 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     private ContactsDefaultAdapter contactsDefaultAdapter;
 
+    private ContactsLandscapeAdapter contactsLandscapeAdapter_default;
+
+    private LinearLayoutManager linearLayoutManager;
+    private GridLayoutManager gridLayoutManager;
+
     private MainFragment mainFragment = new MainFragment();
 
     @Override
@@ -62,8 +69,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             addContacts();
         }
 
-
-
         Collections.sort(contacts_list, new Comparator<Contact>() {
             @Override
             public int compare(Contact o1, Contact o2) {
@@ -71,7 +76,10 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             }
         });
 
-        contactsDefaultAdapter = new ContactsDefaultAdapter(contacts_list,contactsFav_list);
+        setAdapters();
+
+        linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        gridLayoutManager = new GridLayoutManager(getApplicationContext(),2);
 
         FragmentTransaction fragmentTransaction= getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.tab_list_container_main, mainFragment);
@@ -81,14 +89,31 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     }
 
     /*
+    Asegurando que se guarden los valores de las listas
+     */
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(KEY_SAVED_INSTANCE_STATE, contacts_list);
+        super.onSaveInstanceState(outState);
+    }
+
+    /*
     Metodo que implementado para poder setter adpter a los recycler views desde main
      */
 
     @Override
     public void OnBindAdapter(RecyclerView rv, int id_type_of_fragment) {
         switch(id_type_of_fragment){
+
             case ID_DEFAULT_KEY:
-                rv.setAdapter(contactsDefaultAdapter);
+                if(isLandscape()){
+                    rv.setLayoutManager(linearLayoutManager);
+                    rv.setAdapter(contactsLandscapeAdapter_default);
+                }else{
+                    rv.setLayoutManager(gridLayoutManager);
+                    rv.setAdapter(contactsDefaultAdapter);
+                }
                 break;
 
             case ID_FAV_KEY:
@@ -99,16 +124,12 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         }
     }
 
-    /*
-    Asegurando que se
-     */
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable(KEY_SAVED_INSTANCE_STATE, contacts_list);
-        super.onSaveInstanceState(outState);
+    private void setAdapters(){
+        contactsDefaultAdapter = new ContactsDefaultAdapter(contacts_list);
+
+        contactsLandscapeAdapter_default = new ContactsLandscapeAdapter(contacts_list);
     }
-
 
     /*
     Inflando el boton de busqueda en la ActionBar...
@@ -238,6 +259,14 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 // app-defined int constant. The callback method gets the
                 // result of the request.
             }
+        }
+    }
+
+    public boolean isLandscape(){
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            return false;
+        }else{
+            return true;
         }
     }
 

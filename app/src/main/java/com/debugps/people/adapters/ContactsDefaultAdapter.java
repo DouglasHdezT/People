@@ -22,7 +22,6 @@ public class ContactsDefaultAdapter extends RecyclerView.Adapter<ContactsDefault
      */
 
     private ArrayList<Contact> contacts;
-    private ArrayList<Contact> contactsFav;
 
 
     public class ContactsViewHolder extends RecyclerView.ViewHolder{
@@ -43,9 +42,8 @@ public class ContactsDefaultAdapter extends RecyclerView.Adapter<ContactsDefault
         }
     }
 
-    public ContactsDefaultAdapter(ArrayList<Contact> contacts, ArrayList<Contact> contactsFav) {
+    public ContactsDefaultAdapter(ArrayList<Contact> contacts) {
         this.contacts = contacts;
-        this.contactsFav = contactsFav;
     }
 
     @NonNull

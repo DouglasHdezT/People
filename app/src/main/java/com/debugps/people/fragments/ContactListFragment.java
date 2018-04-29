@@ -18,7 +18,6 @@ public class ContactListFragment extends Fragment {
     private int id_type_of_fragment;
 
     private RecyclerView rv;
-    private GridLayoutManager gridLayoutManager;
 
     //Interfaz Que permite settear los adpters desde el mainFragment
     private OnBindAdapter binderAdapter;
@@ -43,8 +42,6 @@ public class ContactListFragment extends Fragment {
 
         rv = view.findViewById(R.id.recycle_view_main);
 
-        gridLayoutManager = new GridLayoutManager(getContext(),2);
-        rv.setLayoutManager(gridLayoutManager);
         rv.setHasFixedSize(true);
 
         binderAdapter.OnBindAdapter(rv,id_type_of_fragment);
