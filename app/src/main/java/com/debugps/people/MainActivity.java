@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 import com.debugps.people.adapters.ContactsDefaultAdapter;
 import com.debugps.people.adapters.ContactsFavoritesAdapter;
 import com.debugps.people.adapters.ContactsLandscapeAdapter;
+import com.debugps.people.data.CarryBoy;
 import com.debugps.people.data.Contact;
 import com.debugps.people.fragments.ContactListFragment;
 import com.debugps.people.fragments.MainFragment;
@@ -44,11 +46,12 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     public static final int ID_RECENT_KEY = 3;
 
     public static final String KEY_SAVED_INSTANCE_STATE = "ADustlandFairytale";
-    public static final String KEY_SAVED_INSTANCE_STATE_FAV = "ShotMeAtTheNight";
 
     private ArrayList<Contact> contacts_list = new ArrayList<>();
     private ArrayList<Contact> contactsFav_list = new ArrayList<>();
     private ArrayList<Contact> contactsRecent_list = new ArrayList<>();
+
+    private CarryBoy carryBoy=  new CarryBoy();
 
     private ContactsDefaultAdapter contactsDefaultAdapter;
     private ContactsFavoritesAdapter contactsFavoritesAdapter;
@@ -63,8 +66,10 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         EnableRuntimePermission();
 
         if(savedInstanceState != null){
-            contacts_list= (ArrayList<Contact>) savedInstanceState.getSerializable(KEY_SAVED_INSTANCE_STATE);
-            contactsFav_list= (ArrayList<Contact>) savedInstanceState.getSerializable(KEY_SAVED_INSTANCE_STATE_FAV);
+            carryBoy= savedInstanceState.getParcelable(KEY_SAVED_INSTANCE_STATE);
+            contacts_list = carryBoy.getContacts_list();
+            contactsFav_list = carryBoy.getContactsFav_list();
+            contactsRecent_list = carryBoy.getContactsRecent_list();
         }else{
             addContacts();
         }
@@ -86,8 +91,10 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable(KEY_SAVED_INSTANCE_STATE, contacts_list);
-        outState.putSerializable(KEY_SAVED_INSTANCE_STATE_FAV, contactsFav_list);
+        carryBoy.setContacts_list(contacts_list);
+        carryBoy.setContactsFav_list(contactsFav_list);
+        carryBoy.setContactsRecent_list(contactsRecent_list);
+        outState.putParcelable(KEY_SAVED_INSTANCE_STATE, carryBoy);
         super.onSaveInstanceState(outState);
     }
 
