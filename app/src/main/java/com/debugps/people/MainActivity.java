@@ -25,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.SearchView;
 
+import com.debugps.people.adapters.ContactsRecentAdapter;
 import com.debugps.people.adapters.ContactsDefaultAdapter;
 import com.debugps.people.adapters.ContactsFavoritesAdapter;
 import com.debugps.people.data.CarryBoy;
@@ -34,7 +35,6 @@ import com.debugps.people.fragments.ContactListFragment;
 import com.debugps.people.fragments.LandscapeViewFragment;
 import com.debugps.people.fragments.MainFragment;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     private ContactsDefaultAdapter contactsDefaultAdapter;
     private ContactsFavoritesAdapter contactsFavoritesAdapter;
+    private static ContactsRecentAdapter contactsRecentAdapter;
 
     private MainFragment mainFragment = new MainFragment();
 
@@ -127,6 +128,8 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 break;
 
             case ID_RECENT_KEY:
+                rv.setLayoutManager(l);
+                rv.setAdapter(contactsRecentAdapter);
                 break;
         }
     }
@@ -173,6 +176,8 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             }
         };
 
+        contactsRecentAdapter = new ContactsRecentAdapter(contactsRecent_list, getSupportFragmentManager(), this, isLandscape());
+
     }
 
     public static void showContactPotrait(Contact contact, FragmentManager fragmentManager) {
@@ -194,7 +199,11 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     }
 
     public static void callContact(Context context, Contact contact) {
-        contactsRecent_list.add(contact);
+        if (contact.getPhoneNumbers() == null){
+            return;
+        }
+
+        addContactToRecent(contact);
 
         Intent i = new Intent(Intent.ACTION_CALL);
         i.setData(Uri.parse(("tel:" + contact.getPhoneNumbers())));
@@ -209,6 +218,20 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             return;
         }
         context.startActivity(i);
+    }
+
+    private static void addContactToRecent(Contact contact){
+        int index =0;
+        if(contactsRecent_list.contains(contact)){
+            index = contactsRecent_list.indexOf(contact);
+            contactsRecent_list.remove(index);
+            contactsRecentAdapter.notifyItemRemoved(index);
+            contactsRecentAdapter.notifyItemRangeChanged(index, contactsRecent_list.size());
+        }
+        contact.upCantCalls();
+        contactsRecent_list.add(0, contact);
+        contactsRecentAdapter.notifyItemInserted(0);
+        contactsRecentAdapter.notifyItemRangeChanged(0, contactsRecent_list.size());
     }
 
     public static void shareContact(Context context, Contact contact){

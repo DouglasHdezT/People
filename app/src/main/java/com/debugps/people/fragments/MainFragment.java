@@ -41,13 +41,17 @@ public class MainFragment extends Fragment {
 
         ContactListFragment contactListFragment_default = ContactListFragment.newInstance(MainActivity.ID_DEFAULT_KEY);
         ContactListFragment contactListFragment_favorites = ContactListFragment.newInstance(MainActivity.ID_FAV_KEY);
+        ContactListFragment contactListFragment_recent = ContactListFragment.newInstance(MainActivity.ID_RECENT_KEY);
 
+        pagerAdapter.addFragmentToList(contactListFragment_recent,"Recientes");
         pagerAdapter.addFragmentToList(contactListFragment_default,"Contactos");
         pagerAdapter.addFragmentToList(contactListFragment_favorites,"Favorites");
 
         mViewPager.setAdapter(pagerAdapter);
 
         mTabLayout.setupWithViewPager(mViewPager);
+
+        mViewPager.setCurrentItem(1);
 
         return view;
     }

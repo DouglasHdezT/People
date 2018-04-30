@@ -12,6 +12,7 @@ public class Contact implements Parcelable {
     private String birthday;
     private boolean favorite;
     private Bitmap profileImage;
+    private int cantCalls;
     private int colorId;
 
     public Contact() {
@@ -103,6 +104,14 @@ public class Contact implements Parcelable {
 
     public void setColorId(int colorId) {
         this.colorId = colorId;
+    }
+
+    public int getCantCalls() {
+        return cantCalls;
+    }
+
+    public void upCantCalls() {
+        this.cantCalls = this.cantCalls+1;
     }
 
     @Override
