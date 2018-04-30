@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
         FragmentTransaction fragmentTransaction= getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.tab_list_container_main, mainFragment);
-
         fragmentTransaction.commit();
 
     }
@@ -131,14 +130,14 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
 
     private void setAdapters(){
-        contactsDefaultAdapter = new ContactsDefaultAdapter(contacts_list, isLandscape()) {
+        contactsDefaultAdapter = new ContactsDefaultAdapter(contacts_list, isLandscape(), getSupportFragmentManager()) {
             @Override
             public void agregar(int position) {
                 int favPosition;
                 contactsFav_list.add(contacts_list.get(position));
                 favPosition = contactsFav_list.indexOf(contacts_list.get(position));
                 contactsFavoritesAdapter.notifyItemInserted(favPosition);
-                //Toast.makeText(getApplicationContext(),"Llegue", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),contacts_list.get(position).getBirthday(), Toast.LENGTH_SHORT).show();
                 contactsFavoritesAdapter.notifyDataSetChanged();
                 sortList(contactsFav_list);
                 contactsFavoritesAdapter.notifyItemRangeChanged(0,contactsFav_list.size());
@@ -155,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             }
         };
 
-        contactsFavoritesAdapter = new ContactsFavoritesAdapter(contactsFav_list) {
+        contactsFavoritesAdapter = new ContactsFavoritesAdapter(contactsFav_list, isLandscape(), getSupportFragmentManager()) {
             @Override
             public void remover(int position) {
                 Contact cFav=  contactsFav_list.get(position);
@@ -208,6 +207,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         Contact contact;
         String phoneNumber = null;
         String email = null;
+        String bDay = null;
         String image_uri;
         Bitmap bitmap=null;
 
@@ -267,6 +267,18 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                         contact.setEmail(email);
                     }
                     emailCursor.close();
+
+                    String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+                    String named = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                    Cursor bdc = contentResolver.query(android.provider.ContactsContract.Data.CONTENT_URI, new String[] { ContactsContract.CommonDataKinds.Event.DATA }, android.provider.ContactsContract.Data.CONTACT_ID+" = "+id+" AND "+ ContactsContract.Data.MIMETYPE+" = '"+ ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE+"' AND "+ ContactsContract.CommonDataKinds.Event.TYPE+" = "+ ContactsContract.CommonDataKinds.Event.TYPE_BIRTHDAY, null, android.provider.ContactsContract.Data.DISPLAY_NAME);
+                    if (bdc.getCount() > 0) {
+                        while (bdc.moveToNext()) {
+                            String birthday = bdc.getString(0);
+                            // now "id" is the user's unique ID, "name" is his full name and "birthday" is the date and time of his birth
+                            contact.setBirthday(birthday);
+                        }
+                    }
+                    bdc.close();
 
                     contact.setColorId(getColorId(contact.getName().toUpperCase().charAt(0)));
 
@@ -403,15 +415,13 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         }
     }
 
-    public static ArrayList<Contact> sortList(ArrayList<Contact> list){
+    public static void sortList(ArrayList<Contact> list){
         Collections.sort(list, new Comparator<Contact>() {
             @Override
             public int compare(Contact o1, Contact o2) {
                 return o1.getName().compareTo(o2.getName());
             }
         });
-
-        return list;
     }
 
 

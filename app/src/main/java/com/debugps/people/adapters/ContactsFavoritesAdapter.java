@@ -1,6 +1,7 @@
 package com.debugps.people.adapters;
 
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,15 +13,20 @@ import android.widget.TextView;
 
 import com.debugps.people.R;
 import com.debugps.people.data.Contact;
+import com.debugps.people.dialogs.DialogContactShow;
 
 import java.util.ArrayList;
 
 public abstract class ContactsFavoritesAdapter extends RecyclerView.Adapter<ContactsFavoritesAdapter.ContactsViewHolder>{
 
     private ArrayList<Contact> contacts_list;
+    private boolean isLandscape;
+    private FragmentManager fragmentManager;
 
-    public ContactsFavoritesAdapter(ArrayList<Contact> contacts_list) {
+    public ContactsFavoritesAdapter(ArrayList<Contact> contacts_list, boolean isLandscape, FragmentManager fragmentManager) {
         this.contacts_list = contacts_list;
+        this.fragmentManager = fragmentManager;
+        this.isLandscape = isLandscape;
     }
 
     public class ContactsViewHolder extends RecyclerView.ViewHolder {
@@ -68,6 +74,18 @@ public abstract class ContactsFavoritesAdapter extends RecyclerView.Adapter<Cont
             @Override
             public void onClick(View v) {
                 remover(position);
+            }
+        });
+
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isLandscape){
+
+                }else{
+                    DialogContactShow dialogContactShow = DialogContactShow.newInstance(contacts_list.get(position));
+                    dialogContactShow.show(fragmentManager,"dialog");
+                }
             }
         });
 

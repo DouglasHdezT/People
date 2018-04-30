@@ -3,6 +3,8 @@
     <string name="search_title">Search...</string>
 
     <string name="card_view_default_name_text">name</string>
-    <string name="card_view_phone_number_text">phone number</string>
+    <string name="card_view_phone_number_text">Phone: </string>
     <string name="card_view_cap_letter">N</string>
+    <string name="email_text">Email:</string>
+    <string name="birthday_text">Birthday:</string>
 </resources>
