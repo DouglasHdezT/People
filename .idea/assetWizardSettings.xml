@@ -28,9 +28,9 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="color" value="ffffff" />
+                            <entry key="color" value="263238" />
                             <entry key="height" value="150" />
-                            <entry key="outputName" value="ic_phone" />
+                            <entry key="outputName" value="ic_phone_black" />
                             <entry key="overrideSize" value="true" />
                             <entry key="sourceFile" value="C:\Users\Dougl" />
                             <entry key="width" value="150" />

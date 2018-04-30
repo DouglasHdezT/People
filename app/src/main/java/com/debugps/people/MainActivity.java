@@ -4,15 +4,16 @@ import android.Manifest;
 import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -23,16 +24,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.debugps.people.adapters.ContactsDefaultAdapter;
 import com.debugps.people.adapters.ContactsFavoritesAdapter;
-import com.debugps.people.adapters.ContactsLandscapeAdapter;
 import com.debugps.people.data.CarryBoy;
 import com.debugps.people.data.Contact;
+import com.debugps.people.dialogs.DialogContactShow;
 import com.debugps.people.fragments.ContactListFragment;
+import com.debugps.people.fragments.LandscapeViewFragment;
 import com.debugps.people.fragments.MainFragment;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,14 +51,15 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     private ArrayList<Contact> contacts_list = new ArrayList<>();
     private ArrayList<Contact> contactsFav_list = new ArrayList<>();
-    private ArrayList<Contact> contactsRecent_list = new ArrayList<>();
+    private static ArrayList<Contact> contactsRecent_list = new ArrayList<>();
 
-    private CarryBoy carryBoy=  new CarryBoy();
+    private CarryBoy carryBoy = new CarryBoy();
 
     private ContactsDefaultAdapter contactsDefaultAdapter;
     private ContactsFavoritesAdapter contactsFavoritesAdapter;
 
     private MainFragment mainFragment = new MainFragment();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,12 +68,12 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
         EnableRuntimePermission();
 
-        if(savedInstanceState != null){
-            carryBoy= savedInstanceState.getParcelable(KEY_SAVED_INSTANCE_STATE);
+        if (savedInstanceState != null) {
+            carryBoy = savedInstanceState.getParcelable(KEY_SAVED_INSTANCE_STATE);
             contacts_list = carryBoy.getContacts_list();
             contactsFav_list = carryBoy.getContactsFav_list();
             contactsRecent_list = carryBoy.getContactsRecent_list();
-        }else{
+        } else {
             addContacts();
         }
 
@@ -78,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
         setAdapters();
 
-        FragmentTransaction fragmentTransaction= getSupportFragmentManager().beginTransaction();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.tab_list_container_main, mainFragment);
         fragmentTransaction.commit();
 
@@ -103,21 +106,21 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     @Override
     public void OnBindAdapter(RecyclerView rv, int id_type_of_fragment, LinearLayoutManager l, GridLayoutManager g) {
-        switch(id_type_of_fragment){
+        switch (id_type_of_fragment) {
 
             case ID_DEFAULT_KEY:
-                if(isLandscape()){
+                if (isLandscape()) {
                     rv.setLayoutManager(l);
-                }else{
+                } else {
                     rv.setLayoutManager(g);
                 }
                 rv.setAdapter(contactsDefaultAdapter);
                 break;
 
             case ID_FAV_KEY:
-                if(isLandscape()){
+                if (isLandscape()) {
                     rv.setLayoutManager(l);
-                }else{
+                } else {
                     rv.setLayoutManager(g);
                 }
                 rv.setAdapter(contactsFavoritesAdapter);
@@ -129,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     }
 
 
-    private void setAdapters(){
+    private void setAdapters() {
         contactsDefaultAdapter = new ContactsDefaultAdapter(contacts_list, isLandscape(), getSupportFragmentManager()) {
             @Override
             public void agregar(int position) {
@@ -140,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 //Toast.makeText(getApplicationContext(),contacts_list.get(position).getBirthday(), Toast.LENGTH_SHORT).show();
                 contactsFavoritesAdapter.notifyDataSetChanged();
                 sortList(contactsFav_list);
-                contactsFavoritesAdapter.notifyItemRangeChanged(0,contactsFav_list.size());
+                contactsFavoritesAdapter.notifyItemRangeChanged(0, contactsFav_list.size());
             }
 
             @Override
@@ -157,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         contactsFavoritesAdapter = new ContactsFavoritesAdapter(contactsFav_list, isLandscape(), getSupportFragmentManager()) {
             @Override
             public void remover(int position) {
-                Contact cFav=  contactsFav_list.get(position);
+                Contact cFav = contactsFav_list.get(position);
                 int posD = contacts_list.indexOf(cFav);
 
                 contacts_list.get(posD).setFavorite(false);
@@ -169,6 +172,59 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
             }
         };
+
+    }
+
+    public static void showContactPotrait(Contact contact, FragmentManager fragmentManager) {
+        if (contact != null) {
+            DialogContactShow dialogContactShow = DialogContactShow.newInstance(contact);
+            dialogContactShow.show(fragmentManager, "dialog");
+        }
+    }
+
+    public static void showContactLandscape(Contact contact, FragmentManager fragmentManager) {
+        if (contact != null) {
+            LandscapeViewFragment landscapeViewFragment = LandscapeViewFragment.newInstance(contact);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.contact_container_main, landscapeViewFragment);
+            fragmentTransaction.commit();
+        }
+
+
+    }
+
+    public static void callContact(Context context, Contact contact) {
+        contactsRecent_list.add(contact);
+
+        Intent i = new Intent(Intent.ACTION_CALL);
+        i.setData(Uri.parse(("tel:" + contact.getPhoneNumbers())));
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        context.startActivity(i);
+    }
+
+    public static void shareContact(Context context, Contact contact){
+
+        Intent i = new Intent(Intent.ACTION_SEND);
+
+        String text="Contacto: "+ contact.getName() + "\nTelefono: "+contact.getPhoneNumbers();
+        i.putExtra(Intent.EXTRA_TEXT, text);
+        i.setType("text/plain");
+
+        try {
+            context.startActivity(Intent.createChooser(i, context.getString(R.string.intent_title)));
+        } catch (android.content.ActivityNotFoundException ex) {
+
+            ex.printStackTrace();
+        }
 
     }
 

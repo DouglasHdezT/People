@@ -34,7 +34,7 @@ public class MainFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view= inflater.inflate(R.layout.tab_contact_list_layout, container, false);
+        View view= inflater.inflate(R.layout.layout_tab_contact_list, container, false);
 
         mTabLayout = view.findViewById(R.id.tablayout_main);
         mViewPager = view.findViewById(R.id.viewpager_main);

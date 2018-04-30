@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">People</string>
     <string name="search_title">Search...</string>
+    <string name="intent_title">Share Contact</string>
 
     <string name="card_view_default_name_text">name</string>
     <string name="card_view_phone_number_text">Phone: </string>

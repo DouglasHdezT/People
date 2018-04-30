@@ -2,6 +2,7 @@ package com.debugps.people.adapters;
 
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,9 +12,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.debugps.people.MainActivity;
 import com.debugps.people.R;
 import com.debugps.people.data.Contact;
 import com.debugps.people.dialogs.DialogContactShow;
+import com.debugps.people.fragments.LandscapeViewFragment;
 
 import java.util.ArrayList;
 
@@ -109,10 +112,9 @@ public abstract class ContactsDefaultAdapter extends RecyclerView.Adapter<Contac
             @Override
             public void onClick(View v) {
                 if(isLandscape){
-
+                    MainActivity.showContactLandscape(contacts.get(position),fragmentManager);
                 }else{
-                    DialogContactShow dialogContactShow = DialogContactShow.newInstance(contacts.get(position));
-                    dialogContactShow.show(fragmentManager,"dialog");
+                    MainActivity.showContactPotrait(contacts.get(position),fragmentManager);
                 }
             }
         });
