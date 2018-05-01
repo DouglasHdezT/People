@@ -373,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     private static int getColorId(){
         //Random rn2 = new Random();
-        int rnNumber = Math.abs((rn.nextInt() % 17) + 1);
+        int rnNumber = Math.abs((rn.nextInt() % 17)) + 1;
         int idColor=R.color.MaterialDeepPurple900;
 
         switch (rnNumber){
