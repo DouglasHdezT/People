@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -30,6 +31,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.webkit.PermissionRequest;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -56,12 +58,14 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     public static final int ID_FAV_KEY = 2;
     public static final int ID_RECENT_KEY = 3;
 
+    public static  final int READ_CONTACTS_KEY= 123;
+
     public static final String KEY_SAVED_INSTANCE_STATE = "ADustlandFairytale";
 
     private static Random rn = new Random();
 
-    private ArrayList<Contact> contacts_list = new ArrayList<>();
-    private ArrayList<Contact> contactsFav_list = new ArrayList<>();
+    private static ArrayList<Contact> contacts_list = new ArrayList<>();
+    private static ArrayList<Contact> contactsFav_list = new ArrayList<>();
     private static ArrayList<Contact> contactsRecent_list = new ArrayList<>();
 
     private CarryBoy carryBoy = new CarryBoy();
@@ -82,17 +86,24 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
         addContactButton = findViewById(R.id.floating_button_add_main);
 
-        EnableRuntimePermission();
-
         if (savedInstanceState != null) {
             carryBoy = savedInstanceState.getParcelable(KEY_SAVED_INSTANCE_STATE);
             contacts_list = carryBoy.getContacts_list();
             contactsFav_list = carryBoy.getContactsFav_list();
             contactsRecent_list = carryBoy.getContactsRecent_list();
-        } else {
-            addContacts();
         }
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //Toast.makeText(this, contacts_list.size(), Toast.LENGTH_SHORT).show();
+
+        if(contacts_list.size() == 0){
+            SecuredAddContacts();
+        }
 
         sortList(contacts_list);
 
@@ -110,7 +121,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 startActivity(i);
             }
         });
-
     }
 
     /*
@@ -126,6 +136,14 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         super.onSaveInstanceState(outState);
     }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        carryBoy = savedInstanceState.getParcelable(KEY_SAVED_INSTANCE_STATE);
+        contacts_list = carryBoy.getContacts_list();
+        contactsFav_list = carryBoy.getContactsFav_list();
+        contactsRecent_list = carryBoy.getContactsRecent_list();
+    }
 
     /*
     Metodo que implementado para poder setter adpter a los recycler views desde main
@@ -394,7 +412,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         }
     }
 
-    private static int getColorId(){
+    public static int getColorId(){
         //Random rn2 = new Random();
         int rnNumber = Math.abs((rn.nextInt() % 17)) + 1;
         int idColor=R.color.MaterialDeepPurple900;
@@ -456,31 +474,23 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         return idColor;
     }
 
-    public void EnableRuntimePermission(){
+    public void SecuredAddContacts(){
 
-        if (ContextCompat.checkSelfPermission(MainActivity.this,
-                Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                checkSelfPermission(Manifest.permission.READ_CONTACTS) !=  PackageManager.PERMISSION_GRANTED){
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, READ_CONTACTS_KEY);
+        }else{
+            addContacts();
+        }
+    }
 
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                    Manifest.permission.READ_CONTACTS)) {
-
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-
-                // No explanation needed, we can request the permission.
-
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.READ_CONTACTS},
-                        123);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == READ_CONTACTS_KEY){
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                SecuredAddContacts();
+            }else{
+                Toast.makeText(this, getString(R.string.read_contact_permission), Toast.LENGTH_SHORT).show();
             }
         }
     }

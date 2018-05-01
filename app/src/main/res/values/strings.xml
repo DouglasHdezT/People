@@ -2,6 +2,8 @@
     <string name="app_name">People</string>
     <string name="search_title">Search...</string>
     <string name="intent_title">Share Contact</string>
+    <string name="read_contact_permission">We cant show anything without permissions</string>
+
 
     <string name="card_view_default_name_text">name</string>
     <string name="card_view_phone_number_text">Phone: </string>
@@ -9,4 +11,10 @@
     <string name="email_text">Email:</string>
     <string name="birthday_text">Birthday:</string>
     <string name="add_contact_text">Add Contact</string>
+    <string name="edit_text_name">Name</string>
+    <string name="edit_text_phone">Phone</string>
+    <string name="edit_text_email">Email</string>
+    <string name="edit_text_birth">Birthday</string>
+    <string name="name_two_dots">Name:</string>
+    <string name="intent_read_image">We cant get images without permissions</string>
 </resources>
