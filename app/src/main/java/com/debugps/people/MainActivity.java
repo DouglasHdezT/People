@@ -1,20 +1,26 @@
 package com.debugps.people;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,7 +29,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.debugps.people.adapters.ContactsRecentAdapter;
 import com.debugps.people.adapters.ContactsDefaultAdapter;
@@ -62,13 +70,17 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     private ContactsFavoritesAdapter contactsFavoritesAdapter;
     private static ContactsRecentAdapter contactsRecentAdapter;
 
+    private FloatingActionButton addContactButton;
+
     private MainFragment mainFragment = new MainFragment();
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        addContactButton = findViewById(R.id.floating_button_add_main);
 
         EnableRuntimePermission();
 
@@ -81,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             addContacts();
         }
 
+
         sortList(contacts_list);
 
         setAdapters();
@@ -88,6 +101,15 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.tab_list_container_main, mainFragment);
         fragmentTransaction.commit();
+
+        addContactButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Toast.makeText(getApplicationContext(), "Si te detecto", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(MainActivity.this,AddContactActivity.class);
+                startActivity(i);
+            }
+        });
 
     }
 
@@ -103,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         outState.putParcelable(KEY_SAVED_INSTANCE_STATE, carryBoy);
         super.onSaveInstanceState(outState);
     }
+
 
     /*
     Metodo que implementado para poder setter adpter a los recycler views desde main

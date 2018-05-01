@@ -9,7 +9,6 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.debugps.people.MainActivity;
 import com.debugps.people.R;
@@ -52,13 +51,17 @@ public class MainFragment extends Fragment {
         ContactListFragment contactListFragment_favorites = ContactListFragment.newInstance(MainActivity.ID_FAV_KEY);
         ContactListFragment contactListFragment_recent = ContactListFragment.newInstance(MainActivity.ID_RECENT_KEY);
 
-        pagerAdapter.addFragmentToList(contactListFragment_recent,"Recientes");
-        pagerAdapter.addFragmentToList(contactListFragment_default,"Contactos");
-        pagerAdapter.addFragmentToList(contactListFragment_favorites,"Favorites");
+        pagerAdapter.addFragmentToList(contactListFragment_recent,"");
+        pagerAdapter.addFragmentToList(contactListFragment_default,"");
+        pagerAdapter.addFragmentToList(contactListFragment_favorites,"");
 
         mViewPager.setAdapter(pagerAdapter);
 
         mTabLayout.setupWithViewPager(mViewPager);
+
+        mTabLayout.getTabAt(0).setIcon(R.drawable.ic_phone_recent);
+        mTabLayout.getTabAt(1).setIcon(R.drawable.ic_contacts);
+        mTabLayout.getTabAt(2).setIcon(R.drawable.ic_star);
 
         mViewPager.setCurrentItem(currentPage);
         return view;

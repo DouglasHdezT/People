@@ -4,9 +4,11 @@
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
-    <permission android:name="android.permission.CALL_PRIVILEGED"
-        android:protectionLevel="signature|privileged"/>
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <permission
+        android:name="android.permission.CALL_PRIVILEGED"
+        android:protectionLevel="signature|privileged" />
 
     <application
         android:allowBackup="true"
@@ -15,19 +17,29 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-            <action android:name="android.intent.action.SEND" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <data android:mimeType="text/plain"/>
-        </intent-filter>
-        </activity>
+                <action android:name="android.intent.action.SEND" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".AddContactActivity"
+            android:label="@string/add_contact_text"
+            android:parentActivityName="com.debugps.people.MainActivity">
+
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.debugps.people.MainActivity"
+                />
+
+        </activity>
     </application>
 
 </manifest>
