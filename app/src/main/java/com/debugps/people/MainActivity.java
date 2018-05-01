@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements ContactListFragment.OnBindAdapter {
 
@@ -48,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     public static final int ID_RECENT_KEY = 3;
 
     public static final String KEY_SAVED_INSTANCE_STATE = "ADustlandFairytale";
+
+    private static Random rn = new Random();
 
     private ArrayList<Contact> contacts_list = new ArrayList<>();
     private ArrayList<Contact> contactsFav_list = new ArrayList<>();
@@ -359,7 +362,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                     }
                     bdc.close();
 
-                    contact.setColorId(getColorId(contact.getName().toUpperCase().charAt(0)));
+                    contact.setColorId(getColorId());
 
                     contacts_list.add(contact);
 
@@ -368,89 +371,62 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         }
     }
 
-    private static int getColorId(char letra){
+    private static int getColorId(){
+        //Random rn2 = new Random();
+        int rnNumber = Math.abs((rn.nextInt() % 17) + 1);
         int idColor=R.color.MaterialDeepPurple900;
-        switch (letra){
-            case 'A':
+
+        switch (rnNumber){
+            case 1:
                 idColor = R.color.MaterialBlue900;
                 break;
-            case 'B':
+            case 2:
                 idColor = R.color.MaterialRed900;
                 break;
-            case 'C':
+            case 3:
                 idColor = R.color.MaterialPurple900;
                 break;
-            case 'D':
+            case 4:
                 idColor = R.color.MaterialBlueGrey900;
                 break;
-            case 'E':
+            case 5:
                 idColor = R.color.MaterialCyan900;
                 break;
-            case 'F':
+            case 6:
                 idColor = R.color.MaterialIndigo900;
                 break;
-            case 'G':
+            case 7:
                 idColor = R.color.MaterialLime900;
                 break;
-            case 'H':
+            case 8:
                 idColor = R.color.MaterialBrown900;
                 break;
-            case 'I':
+            case 9:
                 idColor = R.color.MaterialOrange900;
                 break;
-            case 'J':
+            case 10:
                 idColor = R.color.MaterialPink900;
                 break;
-            case 'K':
+            case 11:
                 idColor = R.color.MaterialTeal900;
                 break;
-            case 'L':
+            case 12:
                 idColor = R.color.MaterialLightGreen900;
                 break;
-            case 'M':
+            case 13:
                 idColor = R.color.MaterialLightBlue900;
                 break;
-            case 'N':
-                idColor = R.color.MaterialGreen900;
+            case 14:
+                idColor = R.color.MaterialDeepPurple900;
                 break;
-            case 'Ñ':
-                idColor = R.color.MaterialBlueGrey900;
-                break;
-            case 'O':
-                idColor = R.color.MaterialGrey900;
-                break;
-            case 'P':
-                idColor = R.color.MaterialBlue900;
-                break;
-            case 'Q':
-                idColor = R.color.MaterialRed900;
-                break;
-            case 'R':
-                idColor = R.color.MaterialPink900;
-                break;
-            case 'S':
-                idColor = R.color.MaterialPurple900;
-                break;
-            case 'T':
-                idColor = R.color.MaterialOrange900;
-                break;
-            case 'U':
-                idColor = R.color.MaterialCyan900;
-                break;
-            case 'V':
-                idColor = R.color.MaterialTeal900;
-                break;
-            case 'W':
-                idColor = R.color.MaterialIndigo900;
-                break;
-            case 'X':
+            case 15:
                 idColor = R.color.MaterialDeepOrange900;
                 break;
-            case 'Y':
-                idColor = R.color.MaterialLightBlue900;
+            case 16:
+                idColor = R.color.MaterialGrey900;
                 break;
-            case 'Z':
-                idColor = R.color.MaterialLime900;
+            case 17:
+                idColor = R.color.MaterialGreen900;
                 break;
         }
 
@@ -503,6 +479,4 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         });
     }
 
-
 }
-

@@ -76,6 +76,7 @@ public class DialogContactShow extends DialogFragment {
 
         if(contact.getProfileImage() == null){
             profilePhoto.setImageResource(R.drawable.ic_person);
+            profilePhoto.setBackgroundResource(contact.getColorId());
         }else{
             profilePhoto.setImageBitmap(contact.getProfileImage());
         }

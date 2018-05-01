@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.debugps.people.MainActivity;
 import com.debugps.people.R;
@@ -16,10 +17,14 @@ import com.debugps.people.adapters.MainPagerAdapter;
 
 public class MainFragment extends Fragment {
 
+    private static String KEY_INT_CURRENT_PAGE="SeMeOlvidaLaVida";
+
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
 
     private MainPagerAdapter pagerAdapter;
+
+    private static int currentPage = 1;
 
 
     public MainFragment() {
@@ -36,6 +41,10 @@ public class MainFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view= inflater.inflate(R.layout.layout_tab_contact_list, container, false);
 
+        if(savedInstanceState != null){
+            currentPage = savedInstanceState.getInt(KEY_INT_CURRENT_PAGE);
+        }
+
         mTabLayout = view.findViewById(R.id.tablayout_main);
         mViewPager = view.findViewById(R.id.viewpager_main);
 
@@ -51,9 +60,14 @@ public class MainFragment extends Fragment {
 
         mTabLayout.setupWithViewPager(mViewPager);
 
-        mViewPager.setCurrentItem(1);
-
+        mViewPager.setCurrentItem(currentPage);
         return view;
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putInt(KEY_INT_CURRENT_PAGE, mViewPager.getCurrentItem());
+        //Toast.makeText(getContext(),mViewPager.getCurrentItem()+"",Toast.LENGTH_SHORT).show();
+        super.onSaveInstanceState(outState);
+    }
 }
