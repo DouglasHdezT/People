@@ -1,12 +1,10 @@
 package com.debugps.people;
 
 import android.Manifest;
-import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -17,12 +15,8 @@ import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -31,7 +25,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
-import android.webkit.PermissionRequest;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -61,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     public static  final int READ_CONTACTS_KEY= 123;
 
     public static final String KEY_SAVED_INSTANCE_STATE = "ADustlandFairytale";
+    private static final int CALL_PHONE_KEY = 666;
 
     private static Random rn = new Random();
 
@@ -76,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     private FloatingActionButton addContactButton;
 
+    private static AppCompatActivity appCompatAct;
+
     private MainFragment mainFragment = new MainFragment();
 
 
@@ -83,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        appCompatAct = MainActivity.this;
 
         addContactButton = findViewById(R.id.floating_button_add_main);
 
@@ -93,25 +91,36 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             contactsRecent_list = carryBoy.getContactsRecent_list();
         }
 
+//        Intent intent = getIntent();
+//        if(intent != null){
+//            Contact newContact = intent.getParcelableExtra(KEY_CONTACT);
+//            CarryBoyBitmap carryBoyBitmap = intent.getParcelableExtra(KEY_CARRY_BOY_BITMAP);
+//            if(carryBoyBitmap != null){
+//                Bitmap bitmap_tmp = Bitmap.createBitmap(carryBoyBitmap.getWidth(), carryBoyBitmap.getHeight(), carryBoyBitmap.getBitmapConfig());
+//                ByteBuffer byteBuffer = ByteBuffer.wrap(carryBoyBitmap.getByteArray());
+//                bitmap_tmp.copyPixelsFromBuffer(byteBuffer);
+//            }
+//
+//            contacts_list.add(newContact);
+//        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        //Toast.makeText(this, contacts_list.size(), Toast.LENGTH_SHORT).show();
-
         if(contacts_list.size() == 0){
             SecuredAddContacts();
         }
 
         sortList(contacts_list);
+        //contactsDefaultAdapter.notifyItemRangeChanged(0, contacts_list.size());
 
         setAdapters();
-
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.tab_list_container_main, mainFragment);
         fragmentTransaction.commit();
+        //Toast.makeText(this, contactsRecent_list.size(), Toast.LENGTH_SHORT).show();
 
         addContactButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 startActivity(i);
             }
         });
+
     }
 
     /*
@@ -220,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             }
         };
 
-        contactsRecentAdapter = new ContactsRecentAdapter(contactsRecent_list, getSupportFragmentManager(), this, isLandscape());
+        contactsRecentAdapter = new ContactsRecentAdapter(contactsRecent_list, getSupportFragmentManager(), MainActivity.this, isLandscape());
 
     }
 
@@ -246,36 +256,33 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         if (contact.getPhoneNumbers() == null){
             return;
         }
-
         addContactToRecent(contact);
 
-        Intent i = new Intent(Intent.ACTION_CALL);
-        i.setData(Uri.parse(("tel:" + contact.getPhoneNumbers())));
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                appCompatAct.checkSelfPermission(Manifest.permission.CALL_PHONE) !=  PackageManager.PERMISSION_GRANTED){
+            appCompatAct.requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, CALL_PHONE_KEY);
+        }else{
+            Intent i = new Intent(Intent.ACTION_CALL);
+            i.setData(Uri.parse(("tel:" + contact.getPhoneNumbers())));
+            context.startActivity(i);
         }
-        context.startActivity(i);
     }
 
     private static void addContactToRecent(Contact contact){
-        int index =0;
-        if(contactsRecent_list.contains(contact)){
-            index = contactsRecent_list.indexOf(contact);
+        int index = contactsRecent_list.indexOf(contact);
+        contact.upCantCalls();
+        if(index>= 0){
+            contactsRecentAdapter.notifyItemChanged(index);
             contactsRecent_list.remove(index);
             contactsRecentAdapter.notifyItemRemoved(index);
             contactsRecentAdapter.notifyItemRangeChanged(index, contactsRecent_list.size());
         }
-        contact.upCantCalls();
+
         contactsRecent_list.add(0, contact);
         contactsRecentAdapter.notifyItemInserted(0);
+        //contactsRecentAdapter.notifyItemRangeInserted(0, contactsRecent_list.size());
         contactsRecentAdapter.notifyItemRangeChanged(0, contactsRecent_list.size());
+        contactsRecentAdapter.notifyDataSetChanged();
     }
 
     public static void shareContact(Context context, Contact contact){
@@ -491,6 +498,14 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 SecuredAddContacts();
             }else{
                 Toast.makeText(this, getString(R.string.read_contact_permission), Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        if(requestCode == CALL_PHONE_KEY){
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+
+            }else{
+                Toast.makeText(this, R.string.call_intent_text, Toast.LENGTH_SHORT).show();
             }
         }
     }

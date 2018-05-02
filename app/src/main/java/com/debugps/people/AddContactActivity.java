@@ -19,8 +19,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.debugps.people.data.CarryBoyBitmap;
+import com.debugps.people.data.Contact;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -28,6 +32,9 @@ public class AddContactActivity extends AppCompatActivity {
 
     private static final String KEY_STRING_BIRTH = "Stylo";
     private static final int RESULT_LOAD_IMG = 1223;
+
+    public static final String KEY_CARRY_BOY_BITMAP = "Outlaws";
+    public static final String KEY_CONTACT = "PrizeFighter";
 
     private ImageView profilePhoto;
     private CircleImageView putImageButton;
@@ -39,6 +46,8 @@ public class AddContactActivity extends AppCompatActivity {
     private Button birthInput;
 
     String birhtday;
+    Bitmap bitmap = null;
+    Contact contact;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +67,8 @@ public class AddContactActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        int colorContact, colorButtons;
+        final int colorContact;
+        int colorButtons = R.color.MaterialBlueGrey900;
 
         if(birhtday == null){
             birthInput.setHint(R.string.edit_text_birth);
@@ -103,7 +113,29 @@ public class AddContactActivity extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(AddContactActivity.this, MainActivity.class);
+                Contact contact = new Contact();
+                CarryBoyBitmap carryBoyBitmap = null;
 
+                if(bitmap != null){
+                    carryBoyBitmap= getByteArrayFromBitmap(bitmap);
+                }
+
+                if(nameInput.getText().toString().equals("")){
+                    Toast.makeText(AddContactActivity.this, R.string.error_add_contact, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                contact.setName(nameInput.getText().toString());
+                contact.setBirthday(birthInput.getText().toString());
+                contact.setPhoneNumbers(phoneInput.getText().toString());
+                contact.setEmail(emailInput.getText().toString());
+                contact.setColorId(colorContact);
+
+                intent.putExtra(KEY_CARRY_BOY_BITMAP, carryBoyBitmap);
+                intent.putExtra(KEY_CONTACT, contact);
+
+                AddContactActivity.this.startActivity(intent);
             }
         });
     }
@@ -123,22 +155,23 @@ public class AddContactActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int reqCode, int resultCode, Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
-
-
         if (resultCode == RESULT_OK) {
             try {
                 final Uri imageUri = data.getData();
                 final InputStream imageStream = getContentResolver().openInputStream(imageUri);
                 final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                 profilePhoto.setImageBitmap(selectedImage);
+                bitmap = selectedImage;
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-                Toast.makeText(AddContactActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
+                Toast.makeText(AddContactActivity.this, R.string.error_get_image_1, Toast.LENGTH_LONG).show();
+                bitmap =null;
             }
 
         }else {
-            Toast.makeText(AddContactActivity.this, "You haven't picked Image", Toast.LENGTH_LONG).show();
+            Toast.makeText(AddContactActivity.this, R.string.error_get_image_2, Toast.LENGTH_LONG).show();
             profilePhoto.setImageResource(R.drawable.ic_person);
+            bitmap = null;
         }
     }
 
@@ -163,5 +196,22 @@ public class AddContactActivity extends AppCompatActivity {
                 Toast.makeText(this, getString(R.string.intent_read_image), Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    public CarryBoyBitmap getByteArrayFromBitmap(Bitmap bitmap){
+        byte[] byteArray;
+        int height, width, size;
+        ByteBuffer byteBuffer;
+
+        width = bitmap.getWidth();
+        height = bitmap.getHeight();
+        size = bitmap.getRowBytes() * bitmap.getHeight();
+
+        byteBuffer = ByteBuffer.allocate(size);
+        bitmap.copyPixelsToBuffer(byteBuffer);
+
+        byteArray = byteBuffer.array();
+
+        return new CarryBoyBitmap(byteArray,height,width, Bitmap.Config.valueOf(bitmap.getConfig().name()));
     }
 }

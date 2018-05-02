@@ -34,7 +34,8 @@
         </activity>
         <activity android:name=".AddContactActivity"
             android:label="@string/add_contact_text"
-            android:parentActivityName="com.debugps.people.MainActivity">
+            android:parentActivityName="com.debugps.people.MainActivity"
+            android:windowSoftInputMode="stateHidden">
 
             <meta-data android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.debugps.people.MainActivity"

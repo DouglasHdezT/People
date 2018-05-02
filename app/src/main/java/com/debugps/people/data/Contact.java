@@ -10,9 +10,9 @@ public class Contact implements Parcelable {
     private String phoneNumbers;
     private String email;
     private String birthday;
-    private boolean favorite;
+    private boolean favorite = false;
     private Bitmap profileImage;
-    private int cantCalls;
+    private int cantCalls = 0 ;
     private int colorId;
 
     public Contact() {
