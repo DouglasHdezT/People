@@ -45,6 +45,8 @@ public class AddContactActivity extends AppCompatActivity {
     private EditText emailInput;
     private Button birthInput;
 
+    private Uri image_uri;
+
     String birhtday;
     Bitmap bitmap = null;
     Contact contact;
@@ -74,6 +76,12 @@ public class AddContactActivity extends AppCompatActivity {
             birthInput.setHint(R.string.edit_text_birth);
         }else{
             birthInput.setText(birhtday);
+        }
+
+        if(bitmap == null){
+            profilePhoto.setImageResource(R.drawable.ic_person);
+        }else{
+            profilePhoto.setImageBitmap(bitmap);
         }
 
         colorContact = MainActivity.getColorId();
@@ -113,18 +121,14 @@ public class AddContactActivity extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(AddContactActivity.this, MainActivity.class);
-                Contact contact = new Contact();
-                CarryBoyBitmap carryBoyBitmap = null;
-
-                if(bitmap != null){
-                    carryBoyBitmap= getByteArrayFromBitmap(bitmap);
-                }
-
                 if(nameInput.getText().toString().equals("")){
                     Toast.makeText(AddContactActivity.this, R.string.error_add_contact, Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+                Intent intent = new Intent(AddContactActivity.this, MainActivity.class);
+                Contact contact = new Contact();
+                CarryBoyBitmap carryBoyBitmap = null;
 
                 contact.setName(nameInput.getText().toString());
                 contact.setBirthday(birthInput.getText().toString());
@@ -132,7 +136,7 @@ public class AddContactActivity extends AppCompatActivity {
                 contact.setEmail(emailInput.getText().toString());
                 contact.setColorId(colorContact);
 
-                intent.putExtra(KEY_CARRY_BOY_BITMAP, carryBoyBitmap);
+                intent.putExtra(KEY_CARRY_BOY_BITMAP, image_uri);
                 intent.putExtra(KEY_CONTACT, contact);
 
                 AddContactActivity.this.startActivity(intent);
@@ -143,6 +147,7 @@ public class AddContactActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString(KEY_STRING_BIRTH, birhtday);
+        outState.putParcelable(KEY_CARRY_BOY_BITMAP, bitmap);
         super.onSaveInstanceState(outState);
     }
 
@@ -150,6 +155,7 @@ public class AddContactActivity extends AppCompatActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         birhtday = savedInstanceState.getString(KEY_STRING_BIRTH);
+        bitmap = savedInstanceState.getParcelable(KEY_CARRY_BOY_BITMAP);
     }
 
     @Override
@@ -158,6 +164,7 @@ public class AddContactActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             try {
                 final Uri imageUri = data.getData();
+                image_uri = imageUri;
                 final InputStream imageStream = getContentResolver().openInputStream(imageUri);
                 final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                 profilePhoto.setImageBitmap(selectedImage);
@@ -166,6 +173,7 @@ public class AddContactActivity extends AppCompatActivity {
                 e.printStackTrace();
                 Toast.makeText(AddContactActivity.this, R.string.error_get_image_1, Toast.LENGTH_LONG).show();
                 bitmap =null;
+                image_uri = null;
             }
 
         }else {

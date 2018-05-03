@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
@@ -32,6 +33,7 @@ import com.debugps.people.adapters.ContactsRecentAdapter;
 import com.debugps.people.adapters.ContactsDefaultAdapter;
 import com.debugps.people.adapters.ContactsFavoritesAdapter;
 import com.debugps.people.data.CarryBoy;
+import com.debugps.people.data.CarryBoyBitmap;
 import com.debugps.people.data.Contact;
 import com.debugps.people.dialogs.DialogContactShow;
 import com.debugps.people.fragments.ContactListFragment;
@@ -40,10 +42,15 @@ import com.debugps.people.fragments.MainFragment;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
+
+import static com.debugps.people.AddContactActivity.KEY_CARRY_BOY_BITMAP;
+import static com.debugps.people.AddContactActivity.KEY_CONTACT;
 
 public class MainActivity extends AppCompatActivity implements ContactListFragment.OnBindAdapter {
 
@@ -91,18 +98,28 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             contactsRecent_list = carryBoy.getContactsRecent_list();
         }
 
-//        Intent intent = getIntent();
-//        if(intent != null){
-//            Contact newContact = intent.getParcelableExtra(KEY_CONTACT);
-//            CarryBoyBitmap carryBoyBitmap = intent.getParcelableExtra(KEY_CARRY_BOY_BITMAP);
-//            if(carryBoyBitmap != null){
-//                Bitmap bitmap_tmp = Bitmap.createBitmap(carryBoyBitmap.getWidth(), carryBoyBitmap.getHeight(), carryBoyBitmap.getBitmapConfig());
-//                ByteBuffer byteBuffer = ByteBuffer.wrap(carryBoyBitmap.getByteArray());
-//                bitmap_tmp.copyPixelsFromBuffer(byteBuffer);
-//            }
-//
-//            contacts_list.add(newContact);
-//        }
+        setAdapters();
+
+        Intent i = getIntent();
+
+        if(!i.hasCategory(Intent.CATEGORY_LAUNCHER)){
+            Contact newContact = i.getParcelableExtra(KEY_CONTACT);
+            Uri image_uri= i.getParcelableExtra(KEY_CARRY_BOY_BITMAP);
+            if(image_uri != null){
+                final InputStream imageStream;
+                try {
+                    imageStream = getContentResolver().openInputStream(image_uri);
+                    final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                    newContact.setProfileImage(selectedImage);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+            contacts_list.add(newContact);
+            sortList(contacts_list);
+            contactsDefaultAdapter.notifyItemInserted(contacts_list.indexOf(newContact));
+            contactsDefaultAdapter.notifyItemRangeChanged(0,contacts_list.size());
+        }
     }
 
     @Override
@@ -114,18 +131,15 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         }
 
         sortList(contacts_list);
-        //contactsDefaultAdapter.notifyItemRangeChanged(0, contacts_list.size());
+        contactsDefaultAdapter.notifyItemRangeChanged(0, contacts_list.size());
 
-        setAdapters();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.tab_list_container_main, mainFragment);
         fragmentTransaction.commit();
-        //Toast.makeText(this, contactsRecent_list.size(), Toast.LENGTH_SHORT).show();
 
         addContactButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(getApplicationContext(), "Si te detecto", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(MainActivity.this,AddContactActivity.class);
                 startActivity(i);
             }
@@ -280,7 +294,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
         contactsRecent_list.add(0, contact);
         contactsRecentAdapter.notifyItemInserted(0);
-        //contactsRecentAdapter.notifyItemRangeInserted(0, contactsRecent_list.size());
         contactsRecentAdapter.notifyItemRangeChanged(0, contactsRecent_list.size());
         contactsRecentAdapter.notifyDataSetChanged();
     }
