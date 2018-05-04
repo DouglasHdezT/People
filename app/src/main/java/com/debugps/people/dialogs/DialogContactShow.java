@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.debugps.people.MainActivity;
 import com.debugps.people.R;
 import com.debugps.people.data.Contact;
+import com.debugps.people.intefaces.OnSettingContact;
 
 import org.w3c.dom.Text;
 
@@ -49,7 +50,7 @@ public class DialogContactShow extends DialogFragment {
     public DialogContactShow() {
     }
 
-    public static DialogContactShow newInstance(Contact contact){
+    public static DialogContactShow newInstance(Contact contact) {
         DialogContactShow dialogContactShow = new DialogContactShow();
         dialogContactShow.setContact(contact);
         return dialogContactShow;
@@ -58,7 +59,7 @@ public class DialogContactShow extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if(contact == null){
+        if (contact == null) {
             return null;
         }
         Rect displayRectangle = new Rect();
@@ -66,10 +67,10 @@ public class DialogContactShow extends DialogFragment {
         window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
 
 
-        View view = inflater.inflate(R.layout.dialog_contact_show,container,false);
+        View view = inflater.inflate(R.layout.dialog_contact_show, container, false);
 
-        view.setMinimumWidth((int)(displayRectangle.width() * 0.9f));
-        view.setMinimumHeight((int)(displayRectangle.height() * 0.9f));
+        view.setMinimumWidth((int) (displayRectangle.width() * 0.9f));
+        view.setMinimumHeight((int) (displayRectangle.height() * 0.9f));
 
         name = view.findViewById(R.id.dialog_name);
         email = view.findViewById(R.id.dialog_email);
@@ -87,14 +88,14 @@ public class DialogContactShow extends DialogFragment {
         //Toast.makeText(getContext(),contact.getPhoneNumbers().toString(),Toast.LENGTH_SHORT).show();
         birth.setText(contact.getBirthday());
 
-        for(int i=0;i<contact.getPhoneNumbers().size();i++){
-            LinearLayout viewEditText = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_phones, phonesLayout,false);
+        for (int i = 0; i < contact.getPhoneNumbers().size(); i++) {
+            LinearLayout viewEditText = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_phones, phonesLayout, false);
             TextView txt = viewEditText.findViewById(R.id.dialog_phone_title);
             TextView txt2 = viewEditText.findViewById(R.id.dialog_phone_child);
             String phoneN = contact.getPhoneNumber(i);
-            String txt_default= getString(R.string.parcial_phone_text) + (i+1)+ ": ";
+            String txt_default = getString(R.string.parcial_phone_text) + (i + 1) + ": ";
 
-            if(i>=1){
+            if (i >= 1) {
                 txt.setText(txt_default);
             }
 
@@ -103,38 +104,24 @@ public class DialogContactShow extends DialogFragment {
             phonesLayout.addView(viewEditText);
         }
 
-        if(contact.getProfileImage() == null){
+        if (contact.getProfileImage() == null) {
             profilePhoto.setImageResource(R.drawable.ic_person);
             profilePhoto.setBackgroundResource(contact.getColorId());
-        }else{
+        } else {
             profilePhoto.setImageBitmap(contact.getProfileImage());
         }
 
         callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //MainActivity.callContact(getContext(),contact);
-                final String[] items = (String[])contact.getPhoneNumbers().toArray();
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle(R.string.ask_call_dialog);
-                builder.setItems(items, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int item) {
-                        // Do something with the selection
-                        items[item];
-                    }
-                });
-                AlertDialog alert = builder.create();
-                alert.show();
-
+                onSettingContact.callContact(contact);
             }
         });
 
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.shareContact(getContext(),contact);
+                MainActivity.shareContact(getContext(), contact);
             }
         });
 
@@ -157,11 +144,6 @@ public class DialogContactShow extends DialogFragment {
         this.contact = contact;
     }
 
-    public interface OnSettingContact{
-        void setFavorited(Contact contact);
-        void unsetFavorited(Contact contact);
-        void callContact(String phone);
-    }
 
     @Override
     public void onAttach(Context context) {

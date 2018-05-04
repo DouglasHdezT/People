@@ -1,5 +1,6 @@
 package com.debugps.people.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import com.debugps.people.MainActivity;
 import com.debugps.people.R;
 import com.debugps.people.data.Contact;
+import com.debugps.people.intefaces.OnSettingContact;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -35,6 +37,8 @@ public class LandscapeViewFragment extends Fragment {
     private CircleImageView callButton;
 
     private LinearLayout phonesLayout;
+
+    private OnSettingContact onSettingContact;
 
     public LandscapeViewFragment() {
     }
@@ -96,7 +100,7 @@ public class LandscapeViewFragment extends Fragment {
         callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.callContact(getContext(),contact);
+                onSettingContact.callContact(contact);
             }
         });
 
@@ -112,6 +116,23 @@ public class LandscapeViewFragment extends Fragment {
 
     public void setContact(Contact contact) {
         this.contact = contact;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context instanceof OnSettingContact){
+            onSettingContact = (OnSettingContact) context;
+        }else{
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        onSettingContact = null;
     }
 
 }

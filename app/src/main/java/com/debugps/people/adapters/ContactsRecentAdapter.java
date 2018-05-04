@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.debugps.people.MainActivity;
 import com.debugps.people.R;
 import com.debugps.people.data.Contact;
+import com.debugps.people.intefaces.OnSettingContact;
 
 import java.util.ArrayList;
 
@@ -25,12 +26,14 @@ public class ContactsRecentAdapter extends RecyclerView.Adapter<ContactsRecentAd
     private ArrayList<Contact> contacts_list;
     private Context context;
     private FragmentManager fragmentManager;
+    private OnSettingContact onSettingContact;
 
     public ContactsRecentAdapter(ArrayList<Contact> contacts_list, FragmentManager fragmentManager, Context context, boolean isLandscape) {
         this.contacts_list = contacts_list;
         this.context = context;
         this.fragmentManager = fragmentManager;
         this.isLandscape = isLandscape;
+        this.onSettingContact = (OnSettingContact) context;
     }
 
     public class ContactsViewHolder extends RecyclerView.ViewHolder {
@@ -76,7 +79,7 @@ public class ContactsRecentAdapter extends RecyclerView.Adapter<ContactsRecentAd
             holder.name.setText(str);
         }
 
-        holder.phone.setText(contacts_list.get(position).getPhoneNumber(0));
+        holder.phone.setText(contacts_list.get(position).getLastCalled());
 
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,7 +95,7 @@ public class ContactsRecentAdapter extends RecyclerView.Adapter<ContactsRecentAd
         holder.callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.callContact(context,contacts_list.get(position));
+                onSettingContact.callContact(contacts_list.get(position));
             }
         });
     }
@@ -101,6 +104,5 @@ public class ContactsRecentAdapter extends RecyclerView.Adapter<ContactsRecentAd
     public int getItemCount() {
         return contacts_list.size();
     }
-
 
 }

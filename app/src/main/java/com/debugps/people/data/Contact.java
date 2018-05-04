@@ -16,6 +16,9 @@ public class Contact implements Parcelable {
     private Bitmap profileImage;
     private int cantCalls = 0 ;
     private int colorId;
+    private String lastCalled;
+
+    CharSequence[] strings;
 
     public Contact() {
     }
@@ -72,6 +75,16 @@ public class Contact implements Parcelable {
         }
     }
 
+    public CharSequence[] getArrayOfPhones(){
+        strings = new CharSequence[phoneNumbers.size()];
+
+        for(int i = 0; i< phoneNumbers.size();i++){
+            strings[i] = phoneNumbers.get(i);
+        }
+
+        return strings;
+    }
+
     public ArrayList<String> getPhoneNumbers() {
         return phoneNumbers;
     }
@@ -126,6 +139,14 @@ public class Contact implements Parcelable {
 
     public void upCantCalls() {
         this.cantCalls = this.cantCalls+1;
+    }
+
+    public String getLastCalled() {
+        return lastCalled;
+    }
+
+    public void setLastCalled(String lastCalled) {
+        this.lastCalled = lastCalled;
     }
 
     @Override

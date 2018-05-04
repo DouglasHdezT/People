@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -18,11 +19,13 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -39,6 +42,7 @@ import com.debugps.people.dialogs.DialogContactShow;
 import com.debugps.people.fragments.ContactListFragment;
 import com.debugps.people.fragments.LandscapeViewFragment;
 import com.debugps.people.fragments.MainFragment;
+import com.debugps.people.intefaces.OnSettingContact;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -52,7 +56,7 @@ import java.util.Random;
 import static com.debugps.people.AddContactActivity.KEY_CARRY_BOY_BITMAP;
 import static com.debugps.people.AddContactActivity.KEY_CONTACT;
 
-public class MainActivity extends AppCompatActivity implements ContactListFragment.OnBindAdapter, DialogContactShow.OnSettingContact {
+public class MainActivity extends AppCompatActivity implements ContactListFragment.OnBindAdapter, OnSettingContact {
 
     public static final int ID_DEFAULT_KEY = 1;
     public static final int ID_FAV_KEY = 2;
@@ -75,11 +79,9 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     private ContactsDefaultAdapter contactsDefaultAdapter;
     private ContactsFavoritesAdapter contactsFavoritesAdapter;
-    private static ContactsRecentAdapter contactsRecentAdapter;
+    private ContactsRecentAdapter contactsRecentAdapter;
 
     private FloatingActionButton addContactButton;
-
-    private static AppCompatActivity appCompatAct;
 
     private MainFragment mainFragment = new MainFragment();
 
@@ -88,8 +90,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        appCompatAct = MainActivity.this;
 
         addContactButton = findViewById(R.id.floating_button_add_main);
 
@@ -267,37 +267,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     }
 
-    public static void callContact(Context context, Contact contact) {
-        if (contact.getPhoneNumbers() == null){
-            return;
-        }
-        addContactToRecent(contact);
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                appCompatAct.checkSelfPermission(Manifest.permission.CALL_PHONE) !=  PackageManager.PERMISSION_GRANTED){
-            appCompatAct.requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, CALL_PHONE_KEY);
-        }else{
-            Intent i = new Intent(Intent.ACTION_CALL);
-            i.setData(Uri.parse(("tel:" + contact.getPhoneNumber(0))));
-            context.startActivity(i);
-        }
-    }
-
-    private static void addContactToRecent(Contact contact){
-        int index = contactsRecent_list.indexOf(contact);
-        contact.upCantCalls();
-        if(index>= 0){
-            contactsRecentAdapter.notifyItemChanged(index);
-            contactsRecent_list.remove(index);
-            contactsRecentAdapter.notifyItemRemoved(index);
-            contactsRecentAdapter.notifyItemRangeChanged(index, contactsRecent_list.size());
-        }
-
-        contactsRecent_list.add(0, contact);
-        contactsRecentAdapter.notifyItemInserted(0);
-        contactsRecentAdapter.notifyItemRangeChanged(0, contactsRecent_list.size());
-        contactsRecentAdapter.notifyDataSetChanged();
-    }
 
     public static void shareContact(Context context, Contact contact){
 
@@ -543,6 +513,10 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         });
     }
 
+    /*
+    Metodos de la interfaz perteneciente al dialog de mostrar contacto
+     */
+
     @Override
     public void setFavorited(Contact contact) {
 
@@ -553,8 +527,60 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     }
 
-    @Override
-    public void callContact(String phone) {
+    //Metodos para realizar llamadas.
 
+    @Override
+    public void callContact(final Contact contact) {
+        if (contact.getPhoneNumbers().size() == 0){
+            return;
+        }else if(contact.getPhoneNumbers().size() == 1){
+            addContactToRecent(contact, contact.getPhoneNumber(0));
+            perfomCall(contact.getPhoneNumber(0));
+        }else{
+
+            final CharSequence[] items = contact.getArrayOfPhones();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle(R.string.ask_call_dialog);
+            builder.setItems(items, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int item) {
+                    addContactToRecent(contact, (String)items[item]);
+                    perfomCall(items[item]);
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+
+
+    }
+
+    private void perfomCall(CharSequence phone){
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                MainActivity.this.checkSelfPermission(Manifest.permission.CALL_PHONE) !=  PackageManager.PERMISSION_GRANTED){
+            MainActivity.this.requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, CALL_PHONE_KEY);
+        }else{
+            Intent i = new Intent(Intent.ACTION_CALL);
+            i.setData(Uri.parse(("tel:" + phone)));
+            MainActivity.this.startActivity(i);
+        }
+    }
+
+    private void addContactToRecent(Contact contact, String last){
+        int index = contactsRecent_list.indexOf(contact);
+        contact.upCantCalls();
+        contact.setLastCalled(last);
+        if(index>= 0){
+            contactsRecentAdapter.notifyItemChanged(index);
+            contactsRecent_list.remove(index);
+            contactsRecentAdapter.notifyItemRemoved(index);
+            contactsRecentAdapter.notifyItemRangeChanged(index, contactsRecent_list.size());
+        }
+
+        contactsRecent_list.add(0, contact);
+        contactsRecentAdapter.notifyItemInserted(0);
+        contactsRecentAdapter.notifyItemRangeChanged(0, contactsRecent_list.size());
+        contactsRecentAdapter.notifyDataSetChanged();
     }
 }
