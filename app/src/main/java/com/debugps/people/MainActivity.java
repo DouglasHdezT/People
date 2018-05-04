@@ -52,7 +52,7 @@ import java.util.Random;
 import static com.debugps.people.AddContactActivity.KEY_CARRY_BOY_BITMAP;
 import static com.debugps.people.AddContactActivity.KEY_CONTACT;
 
-public class MainActivity extends AppCompatActivity implements ContactListFragment.OnBindAdapter {
+public class MainActivity extends AppCompatActivity implements ContactListFragment.OnBindAdapter, DialogContactShow.OnSettingContact {
 
     public static final int ID_DEFAULT_KEY = 1;
     public static final int ID_FAV_KEY = 2;
@@ -543,4 +543,18 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         });
     }
 
+    @Override
+    public void setFavorited(Contact contact) {
+
+    }
+
+    @Override
+    public void unsetFavorited(Contact contact) {
+
+    }
+
+    @Override
+    public void callContact(String phone) {
+
+    }
 }

@@ -23,4 +23,5 @@
     <string name="error_get_image_2">You haven\'t picked Image</string>
     <string name="error_add_contact">At Least The Name</string>
     <string name="call_intent_text">We cannot call until you grant us permission</string>
+    <string name="ask_call_dialog">Witch number?</string>
 </resources>

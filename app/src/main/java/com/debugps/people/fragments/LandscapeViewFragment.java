@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.debugps.people.MainActivity;
@@ -32,6 +33,8 @@ public class LandscapeViewFragment extends Fragment {
     private ImageView profilePhoto;
     private CircleImageView shareButton;
     private CircleImageView callButton;
+
+    private LinearLayout phonesLayout;
 
     public LandscapeViewFragment() {
     }
@@ -54,7 +57,6 @@ public class LandscapeViewFragment extends Fragment {
         name = view.findViewById(R.id.layout_landscape_name);
         birth = view.findViewById(R.id.layout_landscape_birth);
         email = view.findViewById(R.id.layout_landscape_email);
-        phone = view.findViewById(R.id.layout_landscape_phone);
 
         profilePhoto =  view.findViewById(R.id.layout_landscape_profile_photo);
         shareButton = view.findViewById(R.id.layout_landscape_share);
@@ -62,8 +64,27 @@ public class LandscapeViewFragment extends Fragment {
 
         name.setText(contact.getName());
         birth.setText(contact.getBirthday());
-        phone.setText(contact.getPhoneNumber(0));
         email.setText(contact.getEmail());
+
+        phonesLayout = view.findViewById(R.id.linear_layout_phones_parent);
+
+        for(int i=0;i<contact.getPhoneNumbers().size();i++){
+            LinearLayout viewEditText = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_phones_landscape, phonesLayout,false);
+            TextView txt = viewEditText.findViewById(R.id.dialog_phone_title);
+            TextView txt2 = viewEditText.findViewById(R.id.dialog_phone_child);
+            String phoneN = contact.getPhoneNumber(i);
+            String txt_default= getString(R.string.parcial_phone_text) +" "+ (i+1)+ ": ";
+
+            if(i>=1){
+                txt.setText(txt_default);
+            }else{
+                txt.setText(R.string.card_view_phone_number_text);
+            }
+
+            txt2.setText(phoneN);
+
+            phonesLayout.addView(viewEditText);
+        }
 
         if(contact.getProfileImage() == null){
             profilePhoto.setImageResource(R.drawable.ic_person);

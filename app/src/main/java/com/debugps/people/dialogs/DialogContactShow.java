@@ -1,6 +1,8 @@
 package com.debugps.people.dialogs;
 
 import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -8,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +42,8 @@ public class DialogContactShow extends DialogFragment {
     private CircleImageView callButton;
 
     private LinearLayout phonesLayout;
+
+    private OnSettingContact onSettingContact;
 
 
     public DialogContactShow() {
@@ -108,7 +113,21 @@ public class DialogContactShow extends DialogFragment {
         callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.callContact(getContext(),contact);
+
+                //MainActivity.callContact(getContext(),contact);
+                final String[] items = (String[])contact.getPhoneNumbers().toArray();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle(R.string.ask_call_dialog);
+                builder.setItems(items, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
+                        // Do something with the selection
+                        items[item];
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+
             }
         });
 
@@ -138,4 +157,26 @@ public class DialogContactShow extends DialogFragment {
         this.contact = contact;
     }
 
+    public interface OnSettingContact{
+        void setFavorited(Contact contact);
+        void unsetFavorited(Contact contact);
+        void callContact(String phone);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context instanceof OnSettingContact){
+            onSettingContact = (OnSettingContact) context;
+        }else{
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        onSettingContact = null;
+    }
 }
