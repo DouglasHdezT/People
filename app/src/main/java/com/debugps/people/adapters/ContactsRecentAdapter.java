@@ -76,7 +76,7 @@ public class ContactsRecentAdapter extends RecyclerView.Adapter<ContactsRecentAd
             holder.name.setText(str);
         }
 
-        holder.phone.setText(contacts_list.get(position).getPhoneNumbers());
+        holder.phone.setText(contacts_list.get(position).getPhoneNumber(0));
 
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override

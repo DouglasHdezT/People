@@ -69,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     private static ArrayList<Contact> contactsFav_list = new ArrayList<>();
     private static ArrayList<Contact> contactsRecent_list = new ArrayList<>();
 
+    private static ArrayList<Contact> query_result_list = new ArrayList<>();
+
     private CarryBoy carryBoy = new CarryBoy();
 
     private ContactsDefaultAdapter contactsDefaultAdapter;
@@ -211,7 +213,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 contactsFav_list.add(contacts_list.get(position));
                 favPosition = contactsFav_list.indexOf(contacts_list.get(position));
                 contactsFavoritesAdapter.notifyItemInserted(favPosition);
-                //Toast.makeText(getApplicationContext(),contacts_list.get(position).getBirthday(), Toast.LENGTH_SHORT).show();
                 contactsFavoritesAdapter.notifyDataSetChanged();
                 sortList(contactsFav_list);
                 contactsFavoritesAdapter.notifyItemRangeChanged(0, contactsFav_list.size());
@@ -277,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             appCompatAct.requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, CALL_PHONE_KEY);
         }else{
             Intent i = new Intent(Intent.ACTION_CALL);
-            i.setData(Uri.parse(("tel:" + contact.getPhoneNumbers())));
+            i.setData(Uri.parse(("tel:" + contact.getPhoneNumber(0))));
             context.startActivity(i);
         }
     }
@@ -397,9 +398,11 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                     contact.setName(name);
                     Cursor phoneCursor = contentResolver.query(phoneCONTENT_URI,null,Phone_CONTACT_ID+" =? ", new String[]{contactID},null);
 
-                    while (phoneCursor.moveToNext()){
+                    phoneCursor.moveToFirst();
+                    while (!phoneCursor.isAfterLast()){
                         phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(NUMBER));
-                        contact.setPhoneNumbers(phoneNumber);
+                        contact.setPhoneNumber(phoneNumber);
+                        phoneCursor.moveToNext();
                     }
                     phoneCursor.close();
 

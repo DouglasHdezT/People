@@ -132,7 +132,7 @@ public class AddContactActivity extends AppCompatActivity {
 
                 contact.setName(nameInput.getText().toString());
                 contact.setBirthday(birthInput.getText().toString());
-                contact.setPhoneNumbers(phoneInput.getText().toString());
+                contact.setPhoneNumber(phoneInput.getText().toString());
                 contact.setEmail(emailInput.getText().toString());
                 contact.setColorId(colorContact);
 

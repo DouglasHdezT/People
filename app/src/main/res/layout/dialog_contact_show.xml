@@ -45,28 +45,12 @@
                 />
 
             <LinearLayout
+                android:id="@+id/linear_layout_phones_parent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-                <TextView
-                    android:textColor="@android:color/white"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="8dp"
-                    android:text="@string/card_view_phone_number_text"/>
 
-                <TextView
-                    android:id="@+id/dialog_phone"
-                    android:textColor="@android:color/white"
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:layout_height="wrap_content"
-                    android:textSize="17sp"
-                    android:text="@string/card_view_phone_number_text"/>
 
             </LinearLayout>
 

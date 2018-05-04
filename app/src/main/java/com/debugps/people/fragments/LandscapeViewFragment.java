@@ -62,7 +62,7 @@ public class LandscapeViewFragment extends Fragment {
 
         name.setText(contact.getName());
         birth.setText(contact.getBirthday());
-        phone.setText(contact.getPhoneNumbers());
+        phone.setText(contact.getPhoneNumber(0));
         email.setText(contact.getEmail());
 
         if(contact.getProfileImage() == null){

@@ -16,9 +16,11 @@
     <string name="edit_text_email">Email</string>
     <string name="edit_text_birth">Birthday</string>
     <string name="name_two_dots">Name:</string>
-    <string name="intent_read_image">We cant get images without permissions</string>
+    <string name="parcial_phone_text">Phone </string>
+
+    <string name="intent_read_image">We cannot get images without permissions</string>
     <string name="error_get_image_1">Something went wrong</string>
     <string name="error_get_image_2">You haven\'t picked Image</string>
     <string name="error_add_contact">At Least The Name</string>
-    <string name="call_intent_text">We cant call until you grant us permission</string>
+    <string name="call_intent_text">We cannot call until you grant us permission</string>
 </resources>

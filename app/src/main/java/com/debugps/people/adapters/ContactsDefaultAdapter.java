@@ -83,7 +83,7 @@ public abstract class ContactsDefaultAdapter extends RecyclerView.Adapter<Contac
             }else{
                 holder.circleProfilePhoto.setImageBitmap(contacts.get(position).getProfileImage());
             }
-            holder.phoneNumber.setText(contacts.get(position).getPhoneNumbers());
+            holder.phoneNumber.setText(contacts.get(position).getPhoneNumber(0));
         }else{
             if(contacts.get(position).getProfileImage()==null){
                 holder.profilePhoto.setImageResource(R.drawable.ic_person);

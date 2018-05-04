@@ -4,10 +4,12 @@ import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+
 public class Contact implements Parcelable {
 
     private String name;
-    private String phoneNumbers;
+    private ArrayList<String> phoneNumbers = new ArrayList<>();
     private String email;
     private String birthday;
     private boolean favorite = false;
@@ -18,23 +20,15 @@ public class Contact implements Parcelable {
     public Contact() {
     }
 
-    public Contact(String name, String phoneNumbers, String email, String birthday, boolean favorite, Bitmap profileImage, int colorId) {
-        this.name = name;
-        this.phoneNumbers = phoneNumbers;
-        this.email = email;
-        this.birthday = birthday;
-        this.favorite = favorite;
-        this.profileImage = profileImage;
-        this.colorId = colorId;
-    }
 
     protected Contact(Parcel in) {
         name = in.readString();
-        phoneNumbers = in.readString();
+        phoneNumbers = in.createStringArrayList();
         email = in.readString();
         birthday = in.readString();
         favorite = in.readByte() != 0;
         profileImage = in.readParcelable(Bitmap.class.getClassLoader());
+        cantCalls = in.readInt();
         colorId = in.readInt();
     }
 
@@ -58,11 +52,31 @@ public class Contact implements Parcelable {
         this.name = name;
     }
 
-    public String getPhoneNumbers() {
+    public String getPhoneNumber(int index) {
+        return phoneNumbers.get(index);
+    }
+
+    public String getAllNumbers(){
+        String result = "";
+        for(String phone: phoneNumbers){
+            result = phone + ",";
+        }
+        return result;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        phoneNumber =
+                phoneNumber.replaceAll("\\s", "");
+        if(!phoneNumbers.contains(phoneNumber) && !phoneNumber.equals("")){
+            phoneNumbers.add(phoneNumber);
+        }
+    }
+
+    public ArrayList<String> getPhoneNumbers() {
         return phoneNumbers;
     }
 
-    public void setPhoneNumbers(String phoneNumbers) {
+    public void setPhoneNumbers(ArrayList<String> phoneNumbers) {
         this.phoneNumbers = phoneNumbers;
     }
 
@@ -121,12 +135,7 @@ public class Contact implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeString(phoneNumbers);
-        dest.writeString(email);
-        dest.writeString(birthday);
-        dest.writeByte((byte) (favorite ? 1 : 0));
-        dest.writeParcelable(profileImage, flags);
-        dest.writeInt(colorId);
+
     }
+
 }
