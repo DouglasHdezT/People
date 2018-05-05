@@ -11,6 +11,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -33,7 +34,7 @@ public class AddContactActivity extends AppCompatActivity {
     private static final String KEY_STRING_BIRTH = "Stylo";
     private static final int RESULT_LOAD_IMG = 1223;
 
-    public static final String KEY_CARRY_BOY_BITMAP = "Outlaws";
+    public static final String KEY_CARRY_BOY_BITMAP = "Spaceman";
     public static final String KEY_CONTACT = "PrizeFighter";
 
     private ImageView profilePhoto;
@@ -128,13 +129,17 @@ public class AddContactActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(AddContactActivity.this, MainActivity.class);
                 Contact contact = new Contact();
-                CarryBoyBitmap carryBoyBitmap = null;
 
                 contact.setName(nameInput.getText().toString());
                 contact.setBirthday(birthInput.getText().toString());
                 contact.setPhoneNumber(phoneInput.getText().toString());
                 contact.setEmail(emailInput.getText().toString());
                 contact.setColorId(colorContact);
+
+                Log.d("MSM", contact.getName());
+                Log.d("MSM", contact.getBirthday());
+                Log.d("MSM", contact.getEmail());
+
 
                 intent.putExtra(KEY_CARRY_BOY_BITMAP, image_uri);
                 intent.putExtra(KEY_CONTACT, contact);
@@ -206,20 +211,4 @@ public class AddContactActivity extends AppCompatActivity {
         }
     }
 
-    public CarryBoyBitmap getByteArrayFromBitmap(Bitmap bitmap){
-        byte[] byteArray;
-        int height, width, size;
-        ByteBuffer byteBuffer;
-
-        width = bitmap.getWidth();
-        height = bitmap.getHeight();
-        size = bitmap.getRowBytes() * bitmap.getHeight();
-
-        byteBuffer = ByteBuffer.allocate(size);
-        bitmap.copyPixelsToBuffer(byteBuffer);
-
-        byteArray = byteBuffer.array();
-
-        return new CarryBoyBitmap(byteArray,height,width, Bitmap.Config.valueOf(bitmap.getConfig().name()));
-    }
 }

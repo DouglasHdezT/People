@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     private static ArrayList<Contact> query_result_list = new ArrayList<>();
 
-    private CarryBoy carryBoy = new CarryBoy();
+    private static CarryBoy carryBoy = new CarryBoy();
 
     private ContactsDefaultAdapter contactsDefaultAdapter;
     private ContactsFavoritesAdapter contactsFavoritesAdapter;
@@ -103,9 +103,12 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         setAdapters();
 
         Intent i = getIntent();
-
         if(!i.hasCategory(Intent.CATEGORY_LAUNCHER)){
             Contact newContact = i.getParcelableExtra(KEY_CONTACT);
+            Log.d("MSM", newContact.getName());
+            Log.d("MSM", newContact.getBirthday());
+            //Log.d("MSM", newContact.getEmail());
+            Toast.makeText(this, newContact.getName(), Toast.LENGTH_SHORT).show();
             Uri image_uri= i.getParcelableExtra(KEY_CARRY_BOY_BITMAP);
             if(image_uri != null){
                 final InputStream imageStream;
@@ -122,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             contactsDefaultAdapter.notifyItemInserted(contacts_list.indexOf(newContact));
             contactsDefaultAdapter.notifyItemRangeChanged(0,contacts_list.size());
         }
+
     }
 
     @Override
@@ -531,7 +535,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     @Override
     public void callContact(final Contact contact) {
-        if (contact.getPhoneNumbers().size() == 0){
+        if (contact.getPhoneNumbers() == null){
             return;
         }else if(contact.getPhoneNumbers().size() == 1){
             addContactToRecent(contact, contact.getPhoneNumber(0));

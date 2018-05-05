@@ -35,7 +35,6 @@ public class DialogContactShow extends DialogFragment {
 
     private TextView name;
     private TextView email;
-    private TextView phone;
     private TextView birth;
 
     private ImageView profilePhoto;
@@ -88,19 +87,26 @@ public class DialogContactShow extends DialogFragment {
         //Toast.makeText(getContext(),contact.getPhoneNumbers().toString(),Toast.LENGTH_SHORT).show();
         birth.setText(contact.getBirthday());
 
-        for (int i = 0; i < contact.getPhoneNumbers().size(); i++) {
-            LinearLayout viewEditText = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_phones, phonesLayout, false);
-            TextView txt = viewEditText.findViewById(R.id.dialog_phone_title);
-            TextView txt2 = viewEditText.findViewById(R.id.dialog_phone_child);
-            String phoneN = contact.getPhoneNumber(i);
-            String txt_default = getString(R.string.parcial_phone_text) + (i + 1) + ": ";
+        if(contact.getPhoneNumbers() !=  null){
+            for (int i = 0; i < contact.getPhoneNumbers().size(); i++) {
+                LinearLayout viewEditText = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_phones, phonesLayout, false);
+                TextView txt = viewEditText.findViewById(R.id.dialog_phone_title);
+                TextView txt2 = viewEditText.findViewById(R.id.dialog_phone_child);
+                String phoneN = contact.getPhoneNumber(i);
+                String txt_default = getString(R.string.parcial_phone_text) +" " +(i + 1) + ": ";
 
-            if (i >= 1) {
-                txt.setText(txt_default);
+                if (i >= 1) {
+                    txt.setText(txt_default);
+                }
+
+                txt2.setText(phoneN);
+
+                phonesLayout.addView(viewEditText);
             }
-
-            txt2.setText(phoneN);
-
+        }else{
+            LinearLayout viewEditText = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_phones, phonesLayout, false);
+            TextView txt2 = viewEditText.findViewById(R.id.dialog_phone_child);
+            txt2.setText("");
             phonesLayout.addView(viewEditText);
         }
 

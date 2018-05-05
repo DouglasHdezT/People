@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Contact implements Parcelable {
 
     private String name;
-    private ArrayList<String> phoneNumbers = new ArrayList<>();
+    private ArrayList<String> phoneNumbers;
     private String email;
     private String birthday;
     private boolean favorite = false;
@@ -68,8 +68,11 @@ public class Contact implements Parcelable {
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        phoneNumber =
-                phoneNumber.replaceAll("\\s", "");
+        if(phoneNumbers == null){
+            phoneNumbers = new ArrayList<>();
+        }
+
+        phoneNumber = phoneNumber.replaceAll("\\s", "");
         if(!phoneNumbers.contains(phoneNumber) && !phoneNumber.equals("")){
             phoneNumbers.add(phoneNumber);
         }
