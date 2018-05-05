@@ -58,9 +58,11 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     public static final int ID_RECENT_KEY = 3;
 
     public static  final int READ_CONTACTS_KEY= 123;
+    private static final int CALL_PHONE_KEY = 666;
+    private static final int GET_NEW_CONTACT_KEY = 127;
+
 
     public static final String KEY_SAVED_INSTANCE_STATE = "ADustlandFairytale";
-    private static final int CALL_PHONE_KEY = 666;
 
     private static Random rn = new Random();
 
@@ -90,9 +92,11 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
         if (savedInstanceState != null) {
             carryBoy = savedInstanceState.getParcelable(KEY_SAVED_INSTANCE_STATE);
-            contacts_list = carryBoy.getContacts_list();
-            contactsFav_list = carryBoy.getContactsFav_list();
-            contactsRecent_list = carryBoy.getContactsRecent_list();
+            if (carryBoy != null) {
+                contacts_list = carryBoy.getContacts_list();
+                contactsFav_list = carryBoy.getContactsFav_list();
+                contactsRecent_list = carryBoy.getContactsRecent_list();
+            }
         }
 
         setAdapters();
@@ -104,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
         if(contacts_list.size() == 0){
             SecuredAddContacts();
-            sortList(contacts_list);
+            Collections.sort(contacts_list);
         }
 
         contactsDefaultAdapter.notifyItemRangeChanged(0, contacts_list.size());
@@ -117,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this,AddContactActivity.class);
-                startActivity(i);
+                startActivityForResult(i, GET_NEW_CONTACT_KEY);
             }
         });
 
@@ -139,10 +143,28 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+
         carryBoy = savedInstanceState.getParcelable(KEY_SAVED_INSTANCE_STATE);
-        contacts_list = carryBoy.getContacts_list();
-        contactsFav_list = carryBoy.getContactsFav_list();
-        contactsRecent_list = carryBoy.getContactsRecent_list();
+        if (carryBoy != null) {
+            contacts_list = carryBoy.getContacts_list();
+            contactsFav_list = carryBoy.getContactsFav_list();
+            contactsRecent_list = carryBoy.getContactsRecent_list();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == GET_NEW_CONTACT_KEY){
+            if(resultCode ==  RESULT_OK){
+                Contact contact = data.getParcelableExtra(AddContactActivity.KEY_CONTACT);
+                contacts_list.add(contact);
+                contactsDefaultAdapter.notifyItemInserted(contacts_list.size() - 1);
+                Collections.sort(contacts_list);
+                contactsDefaultAdapter.notifyDataSetChanged();
+            }
+        }
     }
 
     /*
@@ -187,8 +209,8 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 favPosition = contactsFav_list.indexOf(contacts_list.get(position));
                 contactsFavoritesAdapter.notifyItemInserted(favPosition);
                 contactsFavoritesAdapter.notifyDataSetChanged();
-                //sortList(contactsFav_list);
-                //contactsFavoritesAdapter.notifyItemRangeChanged(0, contactsFav_list.size());
+                sortList(contactsFav_list);
+                contactsFavoritesAdapter.notifyItemRangeChanged(0, contactsFav_list.size());
             }
 
             @Override
@@ -495,6 +517,30 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     }
 
+    @Override
+    public void removeContact(Contact contact) {
+        boolean isFavorited = contact.isFavorite();
+        int positionFav = contactsFav_list.indexOf(contact);
+        int position  = contacts_list. indexOf(contact);
+        int positionRec = contactsRecent_list.indexOf(contact);
+
+        if(positionFav >= 0){
+            contactsFav_list.remove(positionFav);
+            contactsFavoritesAdapter.notifyItemRemoved(positionFav);
+            contactsFavoritesAdapter.notifyItemRangeChanged(positionFav, contactsFav_list.size());
+        }
+
+        if(positionRec >= 0){
+            contactsRecent_list.remove(positionRec);
+            contactsRecentAdapter.notifyItemRemoved(positionRec);
+            contactsRecentAdapter.notifyItemRangeChanged(positionRec, contactsRecent_list.size());
+        }
+
+        contacts_list.remove(position);
+        contactsDefaultAdapter.notifyItemRemoved(position);
+        contactsDefaultAdapter.notifyItemRangeChanged(position, contacts_list.size());
+    }
+
     //Metodos para realizar llamadas.
 
     @Override
@@ -550,5 +596,11 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         contactsRecentAdapter.notifyItemInserted(0);
         contactsRecentAdapter.notifyItemRangeChanged(0, contactsRecent_list.size());
         contactsRecentAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

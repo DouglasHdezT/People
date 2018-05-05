@@ -41,6 +41,11 @@ public class DialogContactShow extends DialogFragment {
     private CircleImageView shareButton;
     private CircleImageView callButton;
 
+    private CircleImageView closeButton;
+    private CircleImageView editButton;
+    private CircleImageView removeButton;
+    private CircleImageView favButton;
+
     private LinearLayout phonesLayout;
 
     private OnSettingContact onSettingContact;
@@ -78,6 +83,11 @@ public class DialogContactShow extends DialogFragment {
         profilePhoto = view.findViewById(R.id.dialog_profile_photo);
         shareButton = view.findViewById(R.id.dialog_share);
         callButton = view.findViewById(R.id.dialog_call);
+
+        closeButton = view.findViewById(R.id.dialog_exit_button);
+        editButton = view.findViewById(R.id.dialog_edit_button);
+        removeButton = view.findViewById(R.id.dialog_remove_button);
+        favButton = view.findViewById(R.id.dialog_fav_button);
 
         phonesLayout = view.findViewById(R.id.linear_layout_phones_parent);
 
@@ -128,6 +138,21 @@ public class DialogContactShow extends DialogFragment {
             @Override
             public void onClick(View v) {
                 MainActivity.shareContact(getContext(), contact);
+            }
+        });
+
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogContactShow.this.dismiss();
+            }
+        });
+
+        removeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSettingContact.removeContact(contact);
+                DialogContactShow.this.dismiss();
             }
         });
 

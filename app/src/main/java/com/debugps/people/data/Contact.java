@@ -3,9 +3,11 @@ package com.debugps.people.data;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 
-public class Contact implements Parcelable {
+public class Contact implements Parcelable, Comparable<Contact> {
 
     //AREA DE VARIABLES.
     private boolean favorite = false;
@@ -30,7 +32,7 @@ public class Contact implements Parcelable {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name.toUpperCase();
     }
 
     public String getPhoneNumber(int index) {
@@ -164,4 +166,9 @@ public class Contact implements Parcelable {
             return new Contact[size];
         }
     };
+
+    @Override
+    public int compareTo(@NonNull Contact o) {
+        return this.getName().compareTo(o.getName());
+    }
 }

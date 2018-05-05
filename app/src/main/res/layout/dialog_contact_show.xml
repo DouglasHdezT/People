@@ -1,26 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:layout_margin="32dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:weightSum="3">
 
-    <ImageView
-        android:id="@+id/dialog_profile_photo"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_person"
-        android:elevation="7dp"
-        android:background="@color/default_pp_color"
-        />
+        android:layout_weight="1">
+
+        <ImageView
+            android:id="@+id/dialog_profile_photo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/default_pp_color"
+            android:elevation="7dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_person" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/dialog_exit_button"
+            android:layout_width="30dp"
+            android:layout_margin="4dp"
+            android:layout_height="30dp"
+            android:elevation="7dp"
+            android:src="@drawable/ic_cancel"
+            app:civ_border_width="1dp"
+            app:civ_border_color="@color/MaterialBlueGrey900"
+            app:civ_circle_background_color="@color/MaterialBlueGrey900"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/dialog_fav_button"
+            android:layout_width="30dp"
+            android:layout_margin="4dp"
+            android:layout_height="30dp"
+            android:elevation="7dp"
+            android:src="@drawable/ic_favorite"
+            app:civ_border_width="1dp"
+            app:civ_circle_background_color="@color/MaterialBlueGrey900"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/dialog_edit_button"
+            android:layout_width="30dp"
+            android:layout_margin="4dp"
+            android:layout_toLeftOf="@id/dialog_fav_button"
+            android:layout_height="30dp"
+            android:elevation="7dp"
+            android:src="@drawable/ic_edit"
+            app:civ_border_width="1dp"
+            app:civ_border_color="@color/edit_clor"
+            app:civ_circle_background_color="@color/edit_clor"
+            android:layout_toStartOf="@id/dialog_fav_button" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/dialog_remove_button"
+            android:layout_width="30dp"
+            android:layout_margin="4dp"
+            android:layout_height="30dp"
+            android:layout_toLeftOf="@id/dialog_edit_button"
+            android:elevation="7dp"
+            android:src="@drawable/ic_trash"
+            app:civ_border_width="1dp"
+            app:civ_circle_background_color="@color/red_intense"
+            app:civ_border_color="@color/red_intense"
+            android:layout_toStartOf="@id/dialog_edit_button" />
+
+    </RelativeLayout>
 
     <LinearLayout
         android:elevation="4dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="4"
+        android:layout_weight="2"
         android:background="@color/MaterialBlueGrey900"
         android:orientation="vertical"
         >
@@ -122,10 +177,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_margin="8dp"
-                android:src="@drawable/ic_share_black"
-                app:civ_border_color="@android:color/white"
-                app:civ_border_width="5dp"
-                app:civ_circle_background_color="@android:color/white"
+                android:src="@drawable/ic_share"
+
+
                 />
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -135,8 +189,6 @@
                 android:layout_weight="1"
                 android:layout_margin="8dp"
                 android:src="@drawable/ic_phone"
-                app:civ_border_color="@android:color/white"
-                app:civ_border_width="2dp"
                 />
 
         </LinearLayout>

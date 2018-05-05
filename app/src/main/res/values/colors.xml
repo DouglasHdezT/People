@@ -8,6 +8,12 @@
     <color name="default_pp_color">#c5cae9</color>
 
     <color name="dialog_back">#e0e0e0</color>
+    <color name="red_intense">#D50000</color>
+    <color name="star_color">#FFFF00</color>
+    <color name="edit_clor">#00C853</color>
+
+
+
 
     <color name="MaterialRed900">#B71C1C</color>
     <color name="MaterialPink900">#880E4F</color>

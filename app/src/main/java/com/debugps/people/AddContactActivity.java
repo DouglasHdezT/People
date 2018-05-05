@@ -4,14 +4,11 @@ import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -22,9 +19,6 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.debugps.people.data.Contact;
-
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -41,7 +35,7 @@ public class AddContactActivity extends AppCompatActivity {
     private CircleImageView putNewPhone;
     private ImageButton addButton;
 
-    private LinearLayout linearLayoutPhonea;
+    private LinearLayout linearLayoutPhones;
 
     private EditText nameInput;
     private EditText phoneInput;
@@ -67,7 +61,7 @@ public class AddContactActivity extends AppCompatActivity {
         emailInput = findViewById(R.id.layout_add_email);
         birthInput = findViewById(R.id.layout_add_birthday);
 
-        linearLayoutPhonea =  findViewById(R.id.linear_layout_new_contact_phones);
+        linearLayoutPhones =  findViewById(R.id.linear_layout_new_contact_phones);
     }
 
     @Override
@@ -128,7 +122,7 @@ public class AddContactActivity extends AppCompatActivity {
                     return;
                 }
 
-                Intent intent = new Intent(AddContactActivity.this, MainActivity.class);
+                Intent intent = new Intent();
                 Contact contact = new Contact();
 
                 contact.setName(nameInput.getText().toString());
@@ -138,14 +132,16 @@ public class AddContactActivity extends AppCompatActivity {
                 contact.setColorId(colorContact);
                 contact.setProfileImage(image_uri);
 
-                Log.d("MSM", contact.getName());
-                Log.d("MSM", contact.getBirthday());
-                Log.d("MSM", contact.getEmail());
+                for(int i = 0; i< linearLayoutPhones.getChildCount(); i++){
+                    View view = linearLayoutPhones.getChildAt(i);
+                    EditText phoneAct = view.findViewById(R.id.layout_add_phone_new);
+                    contact.setPhoneNumber(phoneAct.getText().toString());
+                }
 
-                MainActivity.contacts_list.add(contact);
-                MainActivity.sortList(MainActivity.contacts_list);
+                intent.putExtra(KEY_CONTACT, contact);
+                setResult(RESULT_OK, intent);
 
-                AddContactActivity.this.startActivity(intent);
+                finish();
             }
         });
 
@@ -157,9 +153,9 @@ public class AddContactActivity extends AppCompatActivity {
                 removeButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                         linearLayoutPhonea.removeView(viewNewPhone);
+                         linearLayoutPhones.removeView(viewNewPhone);
                      }});
-                 linearLayoutPhonea.addView(viewNewPhone);
+                 linearLayoutPhones.addView(viewNewPhone);
             }
         });
     }
@@ -181,13 +177,15 @@ public class AddContactActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int reqCode, int resultCode, Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            image_uri = data.getData();
-            profilePhoto.setImageURI(image_uri);
-        }else {
-            Toast.makeText(AddContactActivity.this, R.string.error_get_image_2, Toast.LENGTH_LONG).show();
-            profilePhoto.setImageResource(R.drawable.ic_person);
-            image_uri = null;
+        if(reqCode == RESULT_LOAD_IMG){
+            if (resultCode == RESULT_OK) {
+                image_uri = data.getData();
+                profilePhoto.setImageURI(image_uri);
+            }else {
+                Toast.makeText(AddContactActivity.this, R.string.error_get_image_2, Toast.LENGTH_LONG).show();
+                profilePhoto.setImageResource(R.drawable.ic_person);
+                image_uri = null;
+            }
         }
     }
 
