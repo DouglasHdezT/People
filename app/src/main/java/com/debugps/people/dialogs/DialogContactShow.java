@@ -62,7 +62,7 @@ public class DialogContactShow extends DialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (contact == null) {
             return null;
         }
@@ -96,6 +96,12 @@ public class DialogContactShow extends DialogFragment {
         //phone.setText(contact.getPhoneNumbers().size()+"");
         //Toast.makeText(getContext(),contact.getPhoneNumbers().toString(),Toast.LENGTH_SHORT).show();
         birth.setText(contact.getBirthday());
+
+        if(contact.isFavorite()){
+            favButton.setCircleBackgroundColorResource(R.color.star_color);
+        }else{
+            favButton.setCircleBackgroundColorResource(R.color.MaterialBlueGrey900);
+        }
 
         if(contact.getPhoneNumbers() !=  null){
             for (int i = 0; i < contact.getPhoneNumbers().size(); i++) {
@@ -138,6 +144,26 @@ public class DialogContactShow extends DialogFragment {
             @Override
             public void onClick(View v) {
                 MainActivity.shareContact(getContext(), contact);
+            }
+        });
+
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        favButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(contact.isFavorite()){
+                    onSettingContact.unsetFavorited(contact);
+                    favButton.setCircleBackgroundColorResource(R.color.MaterialBlueGrey900);
+                }else{
+                    onSettingContact.setFavorited(contact);
+                    favButton.setCircleBackgroundColorResource(R.color.star_color);
+                }
             }
         });
 

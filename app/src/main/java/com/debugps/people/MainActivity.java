@@ -509,12 +509,22 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     @Override
     public void setFavorited(Contact contact) {
-
+        contact.setFavorite(true);
+        contactsFav_list.add(contact);
+        contactsFavoritesAdapter.notifyItemInserted(contactsFav_list.indexOf(contact));
+        contactsDefaultAdapter.notifyDataSetChanged();
+        Collections.sort(contactsFav_list);
+        contactsFavoritesAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void unsetFavorited(Contact contact) {
-
+        contact.setFavorite(false);
+        int index =  contactsFav_list.indexOf(contact);
+        contactsFav_list.remove(contact);
+        contactsFavoritesAdapter.notifyItemRemoved(index);
+        contactsFavoritesAdapter.notifyItemRangeChanged(index, contactsFav_list.size());
+        contactsDefaultAdapter.notifyDataSetChanged();
     }
 
     @Override
