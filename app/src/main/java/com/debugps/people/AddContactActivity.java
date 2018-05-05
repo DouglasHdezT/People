@@ -18,6 +18,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.debugps.people.data.Contact;
@@ -37,7 +38,10 @@ public class AddContactActivity extends AppCompatActivity {
 
     private ImageView profilePhoto;
     private CircleImageView putImageButton;
+    private CircleImageView putNewPhone;
     private ImageButton addButton;
+
+    private LinearLayout linearLayoutPhonea;
 
     private EditText nameInput;
     private EditText phoneInput;
@@ -55,18 +59,21 @@ public class AddContactActivity extends AppCompatActivity {
 
         profilePhoto = findViewById(R.id.layout_add_profile_photo);
         putImageButton = findViewById(R.id.layout_add_put_image_button);
+        putNewPhone = findViewById(R.id.layout_add_phone_button);
         addButton =  findViewById(R.id.layout_add_button);
 
         nameInput  = findViewById(R.id.layout_add_name);
         phoneInput = findViewById(R.id.layout_add_phone);
         emailInput = findViewById(R.id.layout_add_email);
         birthInput = findViewById(R.id.layout_add_birthday);
+
+        linearLayoutPhonea =  findViewById(R.id.linear_layout_new_contact_phones);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        final int colorContact;
+        final int colorContact =MainActivity.getColorId();
         int colorButtons = R.color.MaterialBlueGrey900;
 
         if(birhtday == null){
@@ -78,10 +85,8 @@ public class AddContactActivity extends AppCompatActivity {
         if(image_uri == null){
             profilePhoto.setImageResource(R.drawable.ic_person);
         }else{
-            showBitmap(image_uri);
+            profilePhoto.setImageURI(image_uri);
         }
-
-        colorContact = MainActivity.getColorId();
 
         do{
             colorButtons = MainActivity.getColorId();
@@ -139,10 +144,22 @@ public class AddContactActivity extends AppCompatActivity {
 
                 MainActivity.contacts_list.add(contact);
                 MainActivity.sortList(MainActivity.contacts_list);
-                //intent.putExtra(KEY_URI, image_uri);
-                //intent.putExtra(KEY_CONTACT, contact);
 
                 AddContactActivity.this.startActivity(intent);
+            }
+        });
+
+        putNewPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final LinearLayout viewNewPhone = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_add_phone, null);
+                CircleImageView removeButton =  viewNewPhone.findViewById(R.id.layout_remove_phone_button);
+                removeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                         linearLayoutPhonea.removeView(viewNewPhone);
+                     }});
+                 linearLayoutPhonea.addView(viewNewPhone);
             }
         });
     }
@@ -166,7 +183,7 @@ public class AddContactActivity extends AppCompatActivity {
         super.onActivityResult(reqCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             image_uri = data.getData();
-            showBitmap(image_uri);
+            profilePhoto.setImageURI(image_uri);
         }else {
             Toast.makeText(AddContactActivity.this, R.string.error_get_image_2, Toast.LENGTH_LONG).show();
             profilePhoto.setImageResource(R.drawable.ic_person);
@@ -194,18 +211,6 @@ public class AddContactActivity extends AppCompatActivity {
             }else{
                 Toast.makeText(this, getString(R.string.intent_read_image), Toast.LENGTH_SHORT).show();
             }
-        }
-    }
-
-    private void showBitmap(Uri imageUri){
-        try {
-            final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-            final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-            profilePhoto.setImageBitmap(selectedImage);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            Toast.makeText(AddContactActivity.this, R.string.error_get_image_1, Toast.LENGTH_LONG).show();
-            image_uri = null;
         }
     }
 

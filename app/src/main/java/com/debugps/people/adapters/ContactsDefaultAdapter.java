@@ -84,14 +84,14 @@ public abstract class ContactsDefaultAdapter extends RecyclerView.Adapter<Contac
             if(contacts.get(position).getProfileImage()==null){
                 holder.circleProfilePhoto.setImageResource(R.drawable.ic_person);
             }else{
-                holder.circleProfilePhoto.setImageBitmap(MainActivity.getBitmapFromUri(contacts.get(position).getProfileImage(),context));
+                holder.circleProfilePhoto.setImageURI(contacts.get(position).getProfileImage());
             }
             holder.phoneNumber.setText(contacts.get(position).getPhoneNumbers().size() == 0 ? "":contacts.get(position).getPhoneNumber(0));
         }else{
-            if(contacts.get(position).getProfileImage()==null){
+            if(contacts.get(position).getProfileImage() == null){
                 holder.profilePhoto.setImageResource(R.drawable.ic_person);
             }else{
-                holder.profilePhoto.setImageBitmap(MainActivity.getBitmapFromUri(contacts.get(position).getProfileImage(),context));
+                holder.profilePhoto.setImageURI(contacts.get(position).getProfileImage());
             }
         }
 

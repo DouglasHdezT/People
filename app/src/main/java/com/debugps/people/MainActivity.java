@@ -96,20 +96,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         }
 
         setAdapters();
-
-//        Intent i = getIntent();
-//        if(!i.hasCategory(Intent.CATEGORY_LAUNCHER)){
-//            Contact newContact = i.getParcelableExtra(KEY_CONTACT);
-//            //Log.d("MSM", newContact.getName());
-//            //Log.d("MSM", newContact.getBirthday());
-//            //Log.d("MSM", newContact.getEmail());
-//            Toast.makeText(this, newContact.getName(), Toast.LENGTH_SHORT).show();
-//            contacts_list.add(newContact);
-//            //sortList(contacts_list);
-//            contactsDefaultAdapter.notifyItemInserted(contacts_list.indexOf(newContact));
-//            //contactsDefaultAdapter.notifyItemRangeChanged(0,contacts_list.size());
-//        }
-
     }
 
     @Override
@@ -190,19 +176,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 rv.setAdapter(contactsRecentAdapter);
                 break;
         }
-    }
-
-    public static Bitmap getBitmapFromUri(Uri image_uri, Context mContext){
-        Bitmap bitmap =null;
-        if (image_uri != null) {
-            try {
-                bitmap = MediaStore.Images.Media .getBitmap(mContext.getContentResolver(), image_uri);
-            }catch (FileNotFoundException e) {
-                e.printStackTrace(); }
-            catch (IOException e) {
-                e.printStackTrace(); }
-        }
-        return bitmap;
     }
 
     private void setAdapters() {

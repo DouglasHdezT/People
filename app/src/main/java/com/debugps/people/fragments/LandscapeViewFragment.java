@@ -94,7 +94,7 @@ public class LandscapeViewFragment extends Fragment {
             profilePhoto.setImageResource(R.drawable.ic_person);
             profilePhoto.setBackgroundResource(contact.getColorId());
         }else{
-            profilePhoto.setImageBitmap(MainActivity.getBitmapFromUri(contact.getProfileImage(), getContext()));
+            profilePhoto.setImageURI(contact.getProfileImage());
         }
 
         callButton.setOnClickListener(new View.OnClickListener() {

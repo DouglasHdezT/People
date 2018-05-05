@@ -94,18 +94,44 @@
                     android:text="@string/card_view_phone_number_text"
                     />
 
-                <EditText
-                    android:id="@+id/layout_add_phone"
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_weight="3"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginRight="8dp"
-                    android:inputType="phone"
-                    android:gravity="center"
-                    android:hint="@string/edit_text_phone"/>
+                    android:layout_height="match_parent">
+
+                    <EditText
+                        android:id="@+id/layout_add_phone"
+                        android:layout_width="0dp"
+                        android:layout_weight="3"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="8dp"
+                        android:inputType="phone"
+                        android:gravity="center"
+                        android:hint="@string/edit_text_phone"/>
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/layout_add_phone_button"
+                        android:layout_width="0dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="0.5"
+                        android:layout_marginRight="8dp"
+                        android:layout_height="24dp"
+                        app:civ_circle_background_color="@color/MaterialBlueGrey900"
+                        android:src="@drawable/ic_add"
+                        android:elevation="7dp"
+                        />
+
+                </LinearLayout>
+
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linear_layout_new_contact_phones"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
