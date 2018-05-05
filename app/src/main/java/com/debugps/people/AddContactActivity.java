@@ -20,12 +20,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.debugps.people.data.CarryBoyBitmap;
 import com.debugps.people.data.Contact;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -34,7 +32,7 @@ public class AddContactActivity extends AppCompatActivity {
     private static final String KEY_STRING_BIRTH = "Stylo";
     private static final int RESULT_LOAD_IMG = 1223;
 
-    public static final String KEY_CARRY_BOY_BITMAP = "Spaceman";
+    public static final String KEY_URI = "Spaceman";
     public static final String KEY_CONTACT = "PrizeFighter";
 
     private ImageView profilePhoto;
@@ -49,8 +47,6 @@ public class AddContactActivity extends AppCompatActivity {
     private Uri image_uri;
 
     String birhtday;
-    Bitmap bitmap = null;
-    Contact contact;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,10 +75,10 @@ public class AddContactActivity extends AppCompatActivity {
             birthInput.setText(birhtday);
         }
 
-        if(bitmap == null){
+        if(image_uri == null){
             profilePhoto.setImageResource(R.drawable.ic_person);
         }else{
-            profilePhoto.setImageBitmap(bitmap);
+            showBitmap(image_uri);
         }
 
         colorContact = MainActivity.getColorId();
@@ -135,14 +131,16 @@ public class AddContactActivity extends AppCompatActivity {
                 contact.setPhoneNumber(phoneInput.getText().toString());
                 contact.setEmail(emailInput.getText().toString());
                 contact.setColorId(colorContact);
+                contact.setProfileImage(image_uri);
 
                 Log.d("MSM", contact.getName());
                 Log.d("MSM", contact.getBirthday());
                 Log.d("MSM", contact.getEmail());
 
-
-                intent.putExtra(KEY_CARRY_BOY_BITMAP, image_uri);
-                intent.putExtra(KEY_CONTACT, contact);
+                MainActivity.contacts_list.add(contact);
+                MainActivity.sortList(MainActivity.contacts_list);
+                //intent.putExtra(KEY_URI, image_uri);
+                //intent.putExtra(KEY_CONTACT, contact);
 
                 AddContactActivity.this.startActivity(intent);
             }
@@ -152,7 +150,7 @@ public class AddContactActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString(KEY_STRING_BIRTH, birhtday);
-        outState.putParcelable(KEY_CARRY_BOY_BITMAP, bitmap);
+        outState.putParcelable(KEY_URI, image_uri);
         super.onSaveInstanceState(outState);
     }
 
@@ -160,31 +158,19 @@ public class AddContactActivity extends AppCompatActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         birhtday = savedInstanceState.getString(KEY_STRING_BIRTH);
-        bitmap = savedInstanceState.getParcelable(KEY_CARRY_BOY_BITMAP);
+        image_uri = savedInstanceState.getParcelable(KEY_URI);
     }
 
     @Override
     protected void onActivityResult(int reqCode, int resultCode, Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            try {
-                final Uri imageUri = data.getData();
-                image_uri = imageUri;
-                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                profilePhoto.setImageBitmap(selectedImage);
-                bitmap = selectedImage;
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                Toast.makeText(AddContactActivity.this, R.string.error_get_image_1, Toast.LENGTH_LONG).show();
-                bitmap =null;
-                image_uri = null;
-            }
-
+            image_uri = data.getData();
+            showBitmap(image_uri);
         }else {
             Toast.makeText(AddContactActivity.this, R.string.error_get_image_2, Toast.LENGTH_LONG).show();
             profilePhoto.setImageResource(R.drawable.ic_person);
-            bitmap = null;
+            image_uri = null;
         }
     }
 
@@ -208,6 +194,18 @@ public class AddContactActivity extends AppCompatActivity {
             }else{
                 Toast.makeText(this, getString(R.string.intent_read_image), Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    private void showBitmap(Uri imageUri){
+        try {
+            final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+            final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+            profilePhoto.setImageBitmap(selectedImage);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Toast.makeText(AddContactActivity.this, R.string.error_get_image_1, Toast.LENGTH_LONG).show();
+            image_uri = null;
         }
     }
 

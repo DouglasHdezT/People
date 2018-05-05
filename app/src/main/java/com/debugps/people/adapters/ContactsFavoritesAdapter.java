@@ -26,7 +26,7 @@ public abstract class ContactsFavoritesAdapter extends RecyclerView.Adapter<Cont
     private boolean isLandscape;
     private FragmentManager fragmentManager;
 
-    public ContactsFavoritesAdapter(ArrayList<Contact> contacts_list, boolean isLandscape, FragmentManager fragmentManager) {
+    protected ContactsFavoritesAdapter(ArrayList<Contact> contacts_list, boolean isLandscape, FragmentManager fragmentManager) {
         this.contacts_list = contacts_list;
         this.fragmentManager = fragmentManager;
         this.isLandscape = isLandscape;
@@ -70,7 +70,8 @@ public abstract class ContactsFavoritesAdapter extends RecyclerView.Adapter<Cont
         }
 
         holder.background.setBackgroundResource(contacts_list.get(position).getColorId());
-        holder.capLetter.setText(contacts_list.get(position).getName().charAt(0)+"");
+        String txtFinal = contacts_list.get(position).getName().charAt(0)+"";
+        holder.capLetter.setText(txtFinal);
         holder.name.setText(contacts_list.get(position).getName());
 
         holder.starFavorite.setOnClickListener(new View.OnClickListener() {

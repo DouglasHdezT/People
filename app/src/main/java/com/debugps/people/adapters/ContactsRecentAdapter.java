@@ -69,7 +69,7 @@ public class ContactsRecentAdapter extends RecyclerView.Adapter<ContactsRecentAd
         if(contacts_list.get(position).getProfileImage() == null){
             holder.profilePhoto.setImageResource(R.drawable.ic_person);
         }else{
-            holder.profilePhoto.setImageBitmap(contacts_list.get(position).getProfileImage());
+            holder.profilePhoto.setImageBitmap(MainActivity.getBitmapFromUri(contacts_list.get(position).getProfileImage(),context));
         }
 
         if(contacts_list.get(position).getCantCalls() <= 1){

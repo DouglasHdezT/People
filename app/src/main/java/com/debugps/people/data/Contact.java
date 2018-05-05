@@ -1,51 +1,29 @@
 package com.debugps.people.data;
 
-import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import java.util.ArrayList;
 
 public class Contact implements Parcelable {
 
+    //AREA DE VARIABLES.
+    private boolean favorite = false;
+
     private String name;
-    private ArrayList<String> phoneNumbers;
     private String email;
     private String birthday;
-    private boolean favorite = false;
-    private Bitmap profileImage;
-    private int cantCalls = 0 ;
-    private int colorId;
     private String lastCalled;
 
-    CharSequence[] strings;
+    private int cantCalls = 0 ;
+    private int colorId;
 
-    public Contact() {
-    }
+    private Uri profileImage;
 
+    private ArrayList<String> phoneNumbers;
 
-    protected Contact(Parcel in) {
-        name = in.readString();
-        phoneNumbers = in.createStringArrayList();
-        email = in.readString();
-        birthday = in.readString();
-        favorite = in.readByte() != 0;
-        profileImage = in.readParcelable(Bitmap.class.getClassLoader());
-        cantCalls = in.readInt();
-        colorId = in.readInt();
-    }
-
-    public static final Creator<Contact> CREATOR = new Creator<Contact>() {
-        @Override
-        public Contact createFromParcel(Parcel in) {
-            return new Contact(in);
-        }
-
-        @Override
-        public Contact[] newArray(int size) {
-            return new Contact[size];
-        }
-    };
+    //AREA DE METODOS
+    public Contact() {}
 
     public String getName() {
         return name;
@@ -59,27 +37,20 @@ public class Contact implements Parcelable {
         return phoneNumbers.get(index);
     }
 
-    public String getAllNumbers(){
-        String result = "";
-        for(String phone: phoneNumbers){
-            result = phone + ",";
-        }
-        return result;
-    }
-
     public void setPhoneNumber(String phoneNumber) {
         if(phoneNumbers == null){
             phoneNumbers = new ArrayList<>();
         }
 
         phoneNumber = phoneNumber.replaceAll("\\s", "");
+
         if(!phoneNumbers.contains(phoneNumber) && !phoneNumber.equals("")){
             phoneNumbers.add(phoneNumber);
         }
     }
 
     public CharSequence[] getArrayOfPhones(){
-        strings = new CharSequence[phoneNumbers.size()];
+        CharSequence[] strings = new CharSequence[phoneNumbers.size()];
 
         for(int i = 0; i< phoneNumbers.size();i++){
             strings[i] = phoneNumbers.get(i);
@@ -90,10 +61,6 @@ public class Contact implements Parcelable {
 
     public ArrayList<String> getPhoneNumbers() {
         return phoneNumbers;
-    }
-
-    public void setPhoneNumbers(ArrayList<String> phoneNumbers) {
-        this.phoneNumbers = phoneNumbers;
     }
 
     public String getEmail() {
@@ -120,11 +87,11 @@ public class Contact implements Parcelable {
         this.favorite = favorite;
     }
 
-    public Bitmap getProfileImage() {
+    public Uri getProfileImage() {
         return profileImage;
     }
 
-    public void setProfileImage(Bitmap profileImage) {
+    public void setProfileImage(Uri profileImage) {
         this.profileImage = profileImage;
     }
 
@@ -152,6 +119,10 @@ public class Contact implements Parcelable {
         this.lastCalled = lastCalled;
     }
 
+    /*
+    Implementacionde metodos de Parceable
+     */
+
     @Override
     public int describeContents() {
         return 0;
@@ -159,7 +130,38 @@ public class Contact implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-
+        dest.writeByte((byte) (favorite ? 1 : 0));
+        dest.writeString(name);
+        dest.writeString(email);
+        dest.writeString(birthday);
+        dest.writeString(lastCalled);
+        dest.writeInt(cantCalls);
+        dest.writeInt(colorId);
+        dest.writeParcelable(profileImage, flags);
+        dest.writeStringList(phoneNumbers);
     }
 
+    protected Contact(Parcel in) {
+        favorite = in.readByte() != 0;
+        name = in.readString();
+        email = in.readString();
+        birthday = in.readString();
+        lastCalled = in.readString();
+        cantCalls = in.readInt();
+        colorId = in.readInt();
+        profileImage = in.readParcelable(Uri.class.getClassLoader());
+        phoneNumbers = in.createStringArrayList();
+    }
+
+    public static final Creator<Contact> CREATOR = new Creator<Contact>() {
+        @Override
+        public Contact createFromParcel(Parcel in) {
+            return new Contact(in);
+        }
+
+        @Override
+        public Contact[] newArray(int size) {
+            return new Contact[size];
+        }
+    };
 }

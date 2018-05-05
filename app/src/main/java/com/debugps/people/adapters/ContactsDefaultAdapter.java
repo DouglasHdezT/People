@@ -1,5 +1,6 @@
 package com.debugps.people.adapters;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -31,9 +32,10 @@ public abstract class ContactsDefaultAdapter extends RecyclerView.Adapter<Contac
     private ArrayList<Contact> contacts;
     private boolean isLandscape;
     private FragmentManager fragmentManager;
+    private Context context;
 
 
-    public class ContactsViewHolder extends RecyclerView.ViewHolder{
+    public  class ContactsViewHolder extends RecyclerView.ViewHolder{
 
         CardView cardView;
         ImageButton starFavorite;
@@ -55,10 +57,11 @@ public abstract class ContactsDefaultAdapter extends RecyclerView.Adapter<Contac
         }
     }
 
-    public ContactsDefaultAdapter(ArrayList<Contact> contacts, boolean isLandscape, FragmentManager fragmentManager) {
+    protected ContactsDefaultAdapter(ArrayList<Contact> contacts, boolean isLandscape, FragmentManager fragmentManager, Context context) {
         this.contacts = contacts;
         this.isLandscape = isLandscape;
         this.fragmentManager = fragmentManager;
+        this.context = context;
     }
 
     @NonNull
@@ -81,14 +84,14 @@ public abstract class ContactsDefaultAdapter extends RecyclerView.Adapter<Contac
             if(contacts.get(position).getProfileImage()==null){
                 holder.circleProfilePhoto.setImageResource(R.drawable.ic_person);
             }else{
-                holder.circleProfilePhoto.setImageBitmap(contacts.get(position).getProfileImage());
+                holder.circleProfilePhoto.setImageBitmap(MainActivity.getBitmapFromUri(contacts.get(position).getProfileImage(),context));
             }
-            holder.phoneNumber.setText(contacts.get(position).getPhoneNumber(0));
+            holder.phoneNumber.setText(contacts.get(position).getPhoneNumbers().size() == 0 ? "":contacts.get(position).getPhoneNumber(0));
         }else{
             if(contacts.get(position).getProfileImage()==null){
                 holder.profilePhoto.setImageResource(R.drawable.ic_person);
             }else{
-                holder.profilePhoto.setImageBitmap(contacts.get(position).getProfileImage());
+                holder.profilePhoto.setImageBitmap(MainActivity.getBitmapFromUri(contacts.get(position).getProfileImage(),context));
             }
         }
 

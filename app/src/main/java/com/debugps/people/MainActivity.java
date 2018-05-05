@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
@@ -36,7 +35,6 @@ import com.debugps.people.adapters.ContactsRecentAdapter;
 import com.debugps.people.adapters.ContactsDefaultAdapter;
 import com.debugps.people.adapters.ContactsFavoritesAdapter;
 import com.debugps.people.data.CarryBoy;
-import com.debugps.people.data.CarryBoyBitmap;
 import com.debugps.people.data.Contact;
 import com.debugps.people.dialogs.DialogContactShow;
 import com.debugps.people.fragments.ContactListFragment;
@@ -46,14 +44,11 @@ import com.debugps.people.intefaces.OnSettingContact;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
 
-import static com.debugps.people.AddContactActivity.KEY_CARRY_BOY_BITMAP;
 import static com.debugps.people.AddContactActivity.KEY_CONTACT;
 
 public class MainActivity extends AppCompatActivity implements ContactListFragment.OnBindAdapter, OnSettingContact {
@@ -69,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     private static Random rn = new Random();
 
-    private static ArrayList<Contact> contacts_list = new ArrayList<>();
+    protected static ArrayList<Contact> contacts_list = new ArrayList<>();
     private static ArrayList<Contact> contactsFav_list = new ArrayList<>();
     private static ArrayList<Contact> contactsRecent_list = new ArrayList<>();
 
@@ -102,29 +97,18 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
         setAdapters();
 
-        Intent i = getIntent();
-        if(!i.hasCategory(Intent.CATEGORY_LAUNCHER)){
-            Contact newContact = i.getParcelableExtra(KEY_CONTACT);
-            Log.d("MSM", newContact.getName());
-            Log.d("MSM", newContact.getBirthday());
-            //Log.d("MSM", newContact.getEmail());
-            Toast.makeText(this, newContact.getName(), Toast.LENGTH_SHORT).show();
-            Uri image_uri= i.getParcelableExtra(KEY_CARRY_BOY_BITMAP);
-            if(image_uri != null){
-                final InputStream imageStream;
-                try {
-                    imageStream = getContentResolver().openInputStream(image_uri);
-                    final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                    newContact.setProfileImage(selectedImage);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-            contacts_list.add(newContact);
-            sortList(contacts_list);
-            contactsDefaultAdapter.notifyItemInserted(contacts_list.indexOf(newContact));
-            contactsDefaultAdapter.notifyItemRangeChanged(0,contacts_list.size());
-        }
+//        Intent i = getIntent();
+//        if(!i.hasCategory(Intent.CATEGORY_LAUNCHER)){
+//            Contact newContact = i.getParcelableExtra(KEY_CONTACT);
+//            //Log.d("MSM", newContact.getName());
+//            //Log.d("MSM", newContact.getBirthday());
+//            //Log.d("MSM", newContact.getEmail());
+//            Toast.makeText(this, newContact.getName(), Toast.LENGTH_SHORT).show();
+//            contacts_list.add(newContact);
+//            //sortList(contacts_list);
+//            contactsDefaultAdapter.notifyItemInserted(contacts_list.indexOf(newContact));
+//            //contactsDefaultAdapter.notifyItemRangeChanged(0,contacts_list.size());
+//        }
 
     }
 
@@ -134,9 +118,9 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
         if(contacts_list.size() == 0){
             SecuredAddContacts();
+            sortList(contacts_list);
         }
 
-        sortList(contacts_list);
         contactsDefaultAdapter.notifyItemRangeChanged(0, contacts_list.size());
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -208,9 +192,21 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         }
     }
 
+    public static Bitmap getBitmapFromUri(Uri image_uri, Context mContext){
+        Bitmap bitmap =null;
+        if (image_uri != null) {
+            try {
+                bitmap = MediaStore.Images.Media .getBitmap(mContext.getContentResolver(), image_uri);
+            }catch (FileNotFoundException e) {
+                e.printStackTrace(); }
+            catch (IOException e) {
+                e.printStackTrace(); }
+        }
+        return bitmap;
+    }
 
     private void setAdapters() {
-        contactsDefaultAdapter = new ContactsDefaultAdapter(contacts_list, isLandscape(), getSupportFragmentManager()) {
+        contactsDefaultAdapter = new ContactsDefaultAdapter(contacts_list, isLandscape(), getSupportFragmentManager(), MainActivity.this) {
             @Override
             public void agregar(int position) {
                 int favPosition;
@@ -218,8 +214,8 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 favPosition = contactsFav_list.indexOf(contacts_list.get(position));
                 contactsFavoritesAdapter.notifyItemInserted(favPosition);
                 contactsFavoritesAdapter.notifyDataSetChanged();
-                sortList(contactsFav_list);
-                contactsFavoritesAdapter.notifyItemRangeChanged(0, contactsFav_list.size());
+                //sortList(contactsFav_list);
+                //contactsFavoritesAdapter.notifyItemRangeChanged(0, contactsFav_list.size());
             }
 
             @Override
@@ -325,9 +321,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         Contact contact;
         String phoneNumber = null;
         String email = null;
-        String bDay = null;
         String image_uri;
-        Bitmap bitmap=null;
 
         Uri CONTENT_URI = ContactsContract.Contacts.CONTENT_URI;
 
@@ -358,15 +352,17 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 image_uri = cursor
                         .getString(cursor
                                 .getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI));
-                if (image_uri != null) {
-                    try {
-                        bitmap = MediaStore.Images.Media .getBitmap(this.getContentResolver(), Uri.parse(image_uri));
-                        contact.setProfileImage(bitmap);
-                    }catch (FileNotFoundException e) {
-                        e.printStackTrace(); }
-                    catch (IOException e) {
-                        e.printStackTrace(); }
+                if(image_uri != null){
+                    contact.setProfileImage(Uri.parse(image_uri));
                 }
+//                if (image_uri != null) {
+//                    try {
+//                        bitmap = MediaStore.Images.Media .getBitmap(this.getContentResolver(), Uri.parse(image_uri));
+//                    }catch (FileNotFoundException e) {
+//                        e.printStackTrace(); }
+//                    catch (IOException e) {
+//                        e.printStackTrace(); }
+//                }
 
                 if(hasPhoneNumber >0){
                     contact.setName(name);
@@ -478,6 +474,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, READ_CONTACTS_KEY);
         }else{
             addContacts();
+            contactsDefaultAdapter.notifyItemRangeChanged(0, contacts_list.size());
         }
     }
 
@@ -492,20 +489,14 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         }
 
         if(requestCode == CALL_PHONE_KEY){
-            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-
-            }else{
+            if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
                 Toast.makeText(this, R.string.call_intent_text, Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     public boolean isLandscape(){
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-            return false;
-        }else{
-            return true;
-        }
+        return getResources().getConfiguration().orientation != Configuration.ORIENTATION_PORTRAIT;
     }
 
     public static void sortList(ArrayList<Contact> list){
@@ -518,7 +509,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     }
 
     /*
-    Metodos de la interfaz perteneciente al dialog de mostrar contacto
+    Metodos de la interfaz OnSettingContact
      */
 
     @Override
@@ -535,7 +526,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     @Override
     public void callContact(final Contact contact) {
-        if (contact.getPhoneNumbers() == null){
+        if (contact.getPhoneNumbers() == null || contact.getPhoneNumbers().size() == 0){
             return;
         }else if(contact.getPhoneNumbers().size() == 1){
             addContactToRecent(contact, contact.getPhoneNumber(0));

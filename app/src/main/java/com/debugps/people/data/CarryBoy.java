@@ -1,9 +1,7 @@
 package com.debugps.people.data;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import java.util.ArrayList;
 
 public class CarryBoy implements Parcelable {
@@ -11,7 +9,6 @@ public class CarryBoy implements Parcelable {
     private ArrayList<Contact> contacts_list;
     private ArrayList<Contact> contactsFav_list;
     private ArrayList<Contact> contactsRecent_list;
-    public transient Context myContext;
 
     public CarryBoy() {
     }

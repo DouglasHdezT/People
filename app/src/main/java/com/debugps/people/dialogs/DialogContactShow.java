@@ -89,7 +89,7 @@ public class DialogContactShow extends DialogFragment {
 
         if(contact.getPhoneNumbers() !=  null){
             for (int i = 0; i < contact.getPhoneNumbers().size(); i++) {
-                LinearLayout viewEditText = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_phones, phonesLayout, false);
+                LinearLayout viewEditText = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_phones, null);
                 TextView txt = viewEditText.findViewById(R.id.dialog_phone_title);
                 TextView txt2 = viewEditText.findViewById(R.id.dialog_phone_child);
                 String phoneN = contact.getPhoneNumber(i);
@@ -114,7 +114,7 @@ public class DialogContactShow extends DialogFragment {
             profilePhoto.setImageResource(R.drawable.ic_person);
             profilePhoto.setBackgroundResource(contact.getColorId());
         } else {
-            profilePhoto.setImageBitmap(contact.getProfileImage());
+            profilePhoto.setImageBitmap(MainActivity.getBitmapFromUri(contact.getProfileImage(),getContext()));
         }
 
         callButton.setOnClickListener(new View.OnClickListener() {
