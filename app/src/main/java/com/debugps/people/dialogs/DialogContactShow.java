@@ -34,8 +34,6 @@ public class DialogContactShow extends DialogFragment {
     private Contact contact;
 
     private TextView name;
-    private TextView email;
-    private TextView birth;
 
     private ImageView profilePhoto;
     private CircleImageView shareButton;
@@ -47,6 +45,9 @@ public class DialogContactShow extends DialogFragment {
     private CircleImageView favButton;
 
     private LinearLayout phonesLayout;
+    private LinearLayout emailLayout;
+    private LinearLayout birthLayout;
+
 
     private OnSettingContact onSettingContact;
 
@@ -64,6 +65,7 @@ public class DialogContactShow extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (contact == null) {
+            DialogContactShow.this.dismiss();
             return null;
         }
         Rect displayRectangle = new Rect();
@@ -77,8 +79,6 @@ public class DialogContactShow extends DialogFragment {
         view.setMinimumHeight((int) (displayRectangle.height() * 0.9f));
 
         name = view.findViewById(R.id.dialog_name);
-        email = view.findViewById(R.id.dialog_email);
-        birth = view.findViewById(R.id.dialog_birth);
 
         profilePhoto = view.findViewById(R.id.dialog_profile_photo);
         shareButton = view.findViewById(R.id.dialog_share);
@@ -90,17 +90,33 @@ public class DialogContactShow extends DialogFragment {
         favButton = view.findViewById(R.id.dialog_fav_button);
 
         phonesLayout = view.findViewById(R.id.linear_layout_phones_parent);
+        emailLayout = view.findViewById(R.id.linear_layout_email_parent);
+        birthLayout = view.findViewById(R.id.linear_layout_birthday_parent);
 
         name.setText(contact.getName());
-        email.setText(contact.getEmail());
-        //phone.setText(contact.getPhoneNumbers().size()+"");
-        //Toast.makeText(getContext(),contact.getPhoneNumbers().toString(),Toast.LENGTH_SHORT).show();
-        birth.setText(contact.getBirthday());
 
         if(contact.isFavorite()){
             favButton.setCircleBackgroundColorResource(R.color.star_color);
         }else{
             favButton.setCircleBackgroundColorResource(R.color.MaterialBlueGrey900);
+        }
+
+        if(!contact.getEmail().equals("")){
+            LinearLayout viewEmails = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_phones, null);
+            TextView title =  viewEmails.findViewById(R.id.dialog_phone_title);
+            TextView content =  viewEmails.findViewById(R.id.dialog_phone_child);
+            title.setText(R.string.edit_text_email);
+            content.setText(contact.getEmail());
+            emailLayout.addView(viewEmails);
+        }
+
+        if(!contact.getBirthday().equals("")){
+            LinearLayout viewBirth = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_phones, null);
+            TextView title =  viewBirth.findViewById(R.id.dialog_phone_title);
+            TextView content =  viewBirth.findViewById(R.id.dialog_phone_child);
+            title.setText(R.string.edit_text_birth);
+            content.setText(contact.getBirthday());
+            emailLayout.addView(viewBirth);
         }
 
         if(contact.getPhoneNumbers() !=  null){
