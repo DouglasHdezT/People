@@ -28,6 +28,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -73,6 +74,10 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     private static ArrayList<Contact> contactsFav_list = new ArrayList<>();
     private static ArrayList<Contact> contactsRecent_list = new ArrayList<>();
 
+    protected static ArrayList<Contact> contacts_list_query;
+    private static ArrayList<Contact> contactsFav_list_query;
+    private static ArrayList<Contact> contactsRecent_list_query;
+
     private static CarryBoy carryBoy = new CarryBoy();
 
     private ContactsDefaultAdapter contactsDefaultAdapter;
@@ -97,6 +102,9 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 contacts_list = carryBoy.getContacts_list();
                 contactsFav_list = carryBoy.getContactsFav_list();
                 contactsRecent_list = carryBoy.getContactsRecent_list();
+                contacts_list_query = carryBoy.getContacts_list_query();
+                contactsFav_list_query = carryBoy.getContactsFav_list_query();
+                contactsRecent_list_query = carryBoy.getContactsRecent_list_query();
             }
         }
 
@@ -137,6 +145,9 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         carryBoy.setContacts_list(contacts_list);
         carryBoy.setContactsFav_list(contactsFav_list);
         carryBoy.setContactsRecent_list(contactsRecent_list);
+        carryBoy.setContacts_list_query(contacts_list_query);
+        carryBoy.setContactsFav_list_query(contactsFav_list_query);
+        carryBoy.setContactsRecent_list_query(contactsRecent_list_query);
         outState.putParcelable(KEY_SAVED_INSTANCE_STATE, carryBoy);
         super.onSaveInstanceState(outState);
     }
@@ -150,6 +161,9 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             contacts_list = carryBoy.getContacts_list();
             contactsFav_list = carryBoy.getContactsFav_list();
             contactsRecent_list = carryBoy.getContactsRecent_list();
+            contacts_list_query = carryBoy.getContacts_list_query();
+            contactsFav_list_query = carryBoy.getContactsFav_list_query();
+            contactsRecent_list_query = carryBoy.getContactsRecent_list_query();
         }
     }
 
@@ -372,12 +386,51 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                //Toast.makeText(getApplicationContext(),newText,Toast.LENGTH_SHORT).show();
+                if(newText.equals("")){
+                    contactsDefaultAdapter.chargeFilter(contacts_list);
+                    contactsFavoritesAdapter.chargeFilter(contactsFav_list);
+                    contactsRecentAdapter.chargeFilter(contactsRecent_list);
+                    return true;
+                }
+
+                contacts_list_query = filterData(contacts_list, newText);
+                contactsFav_list_query = filterData(contactsFav_list, newText);
+                contactsRecent_list_query = filterData(contactsRecent_list, newText);
+
+                contactsDefaultAdapter.chargeFilter(contacts_list_query);
+                contactsFavoritesAdapter.chargeFilter(contactsFav_list_query);
+                contactsRecentAdapter.chargeFilter(contactsRecent_list_query);
+
                 return true;
             }
         });
 
         return true;
+    }
+
+    private ArrayList<Contact> filterData(ArrayList<Contact> contacts, String query){
+        ArrayList<Contact> filtered = new ArrayList<>();
+        query = query.toUpperCase();
+
+        for(Contact model : contacts){
+            final String textName = model.getName().toUpperCase();
+            final String textEmail = model.getEmail().toUpperCase();
+            final String textBirth = model.getBirthday().toUpperCase();
+            if(textName.startsWith(query) || textName.contains(query) || textEmail.startsWith(query) || textEmail.contains(query)
+                    || textBirth.startsWith(query) || textBirth.contains(query)){
+                filtered.add(model);
+            }
+
+            if(model.getPhoneNumbers() != null){
+                for(int i= 0; i<model.getPhoneNumbers().size(); i++){
+                    if((model.getPhoneNumber(i).startsWith(query) || model.getPhoneNumber(i).contains(query)) && !filtered.contains(model)){
+                        filtered.add(model);
+                    }
+                }
+            }
+        }
+
+        return filtered;
     }
 
     public void addContacts(){

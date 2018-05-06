@@ -105,4 +105,8 @@ public class ContactsRecentAdapter extends RecyclerView.Adapter<ContactsRecentAd
         return contacts_list.size();
     }
 
+    public void chargeFilter(ArrayList<Contact> contacts){
+        this.contacts_list = contacts;
+        notifyDataSetChanged();
+    }
 }

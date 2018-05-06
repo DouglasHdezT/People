@@ -100,4 +100,9 @@ public abstract class ContactsFavoritesAdapter extends RecyclerView.Adapter<Cont
     }
 
     public abstract void remover(int index);
+
+    public void chargeFilter(ArrayList<Contact> contacts){
+        this.contacts_list = contacts;
+        notifyDataSetChanged();
+    }
 }

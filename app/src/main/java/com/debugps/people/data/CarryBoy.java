@@ -9,6 +9,9 @@ public class CarryBoy implements Parcelable {
     private ArrayList<Contact> contacts_list;
     private ArrayList<Contact> contactsFav_list;
     private ArrayList<Contact> contactsRecent_list;
+    private ArrayList<Contact> contacts_list_query;
+    private ArrayList<Contact> contactsFav_list_query;
+    private ArrayList<Contact> contactsRecent_list_query;
 
     public CarryBoy() {
     }
@@ -59,6 +62,30 @@ public class CarryBoy implements Parcelable {
 
     public void setContactsRecent_list(ArrayList<Contact> contactsRecent_list) {
         this.contactsRecent_list = contactsRecent_list;
+    }
+
+    public ArrayList<Contact> getContacts_list_query() {
+        return contacts_list_query;
+    }
+
+    public void setContacts_list_query(ArrayList<Contact> contacts_list_query) {
+        this.contacts_list_query = contacts_list_query;
+    }
+
+    public ArrayList<Contact> getContactsFav_list_query() {
+        return contactsFav_list_query;
+    }
+
+    public void setContactsFav_list_query(ArrayList<Contact> contactsFav_list_query) {
+        this.contactsFav_list_query = contactsFav_list_query;
+    }
+
+    public ArrayList<Contact> getContactsRecent_list_query() {
+        return contactsRecent_list_query;
+    }
+
+    public void setContactsRecent_list_query(ArrayList<Contact> contactsRecent_list_query) {
+        this.contactsRecent_list_query = contactsRecent_list_query;
     }
 
     @Override

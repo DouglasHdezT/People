@@ -132,4 +132,8 @@ public abstract class ContactsDefaultAdapter extends RecyclerView.Adapter<Contac
     public abstract void agregar(int index);
     public abstract void remover(int index);
 
+    public void chargeFilter(ArrayList<Contact> contacts){
+        this.contacts = contacts;
+        notifyDataSetChanged();
+    }
 }
