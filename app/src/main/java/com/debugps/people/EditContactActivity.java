@@ -10,6 +10,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -21,12 +22,17 @@ import android.widget.Toast;
 
 import com.debugps.people.data.Contact;
 
+import java.util.ArrayList;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class EditContactActivity extends AppCompatActivity {
 
     private static final String KEY_STRING = "PequenoAngelOscuro";
     private static final String KEY_URI = "SaveMe";
+    private static final String KEY_BOOL = "Skyfall";
+    private static final String KEY_ARRAY = "TheRiver";
+
     private static final int RESULT_LOAD_IMG = 999;
 
 
@@ -44,9 +50,13 @@ public class EditContactActivity extends AppCompatActivity {
     private LinearLayout phonesLayout;
 
     private String birthText = "";
+    private String nameText = "";
+    private String emailText = "";
     private Uri image_uri;
 
-    private boolean flag = false;
+    private static ArrayList<String> buff_phones;
+
+    private boolean flag =false;
 
     Contact contact;
     Intent intent;
@@ -56,6 +66,18 @@ public class EditContactActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_contact);
+
+        intent = getIntent();
+        contact = intent.getParcelableExtra(MainActivity.KEY_EDIT_CONTACT);
+
+        phonesLayout =  findViewById(R.id.linear_layout_edit_contact_phones);
+
+        if(savedInstanceState != null){
+            flag = savedInstanceState.getBoolean(KEY_BOOL);
+            buff_phones = savedInstanceState.getStringArrayList(KEY_ARRAY);
+        }else {
+            buff_phones= null;
+        }
 
         profilePhoto = findViewById(R.id.layout_edit_profile_photo);
         refresh =  findViewById(R.id.layout_edit_button);
@@ -67,19 +89,23 @@ public class EditContactActivity extends AppCompatActivity {
 
         birthday = findViewById(R.id.layout_edit_birthday);
 
-        phonesLayout =  findViewById(R.id.linear_layout_edit_contact_phones);
         putImageButton = findViewById(R.id.layout_edit_put_image_button);
 
-        intent = getIntent();
-        contact = intent.getParcelableExtra(MainActivity.KEY_EDIT_CONTACT);
+        if(image_uri == null || !flag){
+            image_uri = contact.getProfileImage();
+        }
 
-        if(contact.getPhoneNumbers().size() >1){
-            for(int i=1; i<contact.getPhoneNumbers().size(); i++){
+        nameText = contact.getName();
+        emailText = contact.getEmail();
+
+        phonesLayout.setSaveEnabled(true);
+
+        if(buff_phones != null){
+            Log.d("MSMSMSMSM", buff_phones.toString());
+            for(int i=0; i<buff_phones.size(); i++){
                 final LinearLayout viewNewPhone = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_add_phone, null);
                 CircleImageView removeButton =  viewNewPhone.findViewById(R.id.layout_remove_phone_button);
                 EditText editTxt= viewNewPhone.findViewById(R.id.layout_add_phone_new);
-
-                editTxt.setText(contact.getPhoneNumber(i));
                 removeButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -87,7 +113,25 @@ public class EditContactActivity extends AppCompatActivity {
                     }});
                 phonesLayout.addView(viewNewPhone);
             }
+        } else {
+            if(contact.getPhoneNumbers().size() >1){
+                for(int i=1; i<contact.getPhoneNumbers().size(); i++){
+                    final LinearLayout viewNewPhone = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_add_phone, null);
+                    CircleImageView removeButton =  viewNewPhone.findViewById(R.id.layout_remove_phone_button);
+                    EditText editTxt= viewNewPhone.findViewById(R.id.layout_add_phone_new);
+
+                    editTxt.setText(contact.getPhoneNumber(i));
+                    removeButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            phonesLayout.removeView(viewNewPhone);
+                        }});
+                    phonesLayout.addView(viewNewPhone);
+                }
+            }
+            buff_phones = new ArrayList<>();
         }
+
     }
 
     @Override
@@ -105,13 +149,21 @@ public class EditContactActivity extends AppCompatActivity {
         profilePhoto.setBackgroundResource(contactColor);
         refresh.setBackgroundResource(buttonColor);
 
+        if(buff_phones != null){
+            if(buff_phones.size() !=0){
+                for(int i = 0; i<phonesLayout.getChildCount();i++){
+                    EditText edt = phonesLayout.getChildAt(i).findViewById(R.id.layout_add_phone_new);
+                    edt.setText(buff_phones.get(i));
+                }
+            }
+        }
 
         if(name.getText().toString().equals("")){
             name.setText(contact.getName());
         }
 
         if(email.getText().toString().equals("")){
-            name.setText(contact.getEmail());
+            email.setText(contact.getEmail());
         }
 
         if(birthText.equals("")){
@@ -123,11 +175,7 @@ public class EditContactActivity extends AppCompatActivity {
         if(image_uri != null){
             profilePhoto.setImageURI(image_uri);
         }else{
-            if (contact.getProfileImage() != null || !flag){
-                profilePhoto.setImageURI(contact.getProfileImage());
-            }else{
-                profilePhoto.setImageResource(R.drawable.ic_person);
-            }
+            profilePhoto.setImageResource(R.drawable.ic_person);
         }
 
         principalPhone.setText(contact.getPhoneNumbers().size()==0 ?"":contact.getPhoneNumber(0));
@@ -201,8 +249,17 @@ public class EditContactActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        buff_phones.clear();
+        for(int i = 0; i< phonesLayout.getChildCount(); i++){
+            View view = phonesLayout.getChildAt(i);
+            EditText phoneAct = view.findViewById(R.id.layout_add_phone_new);
+            //Log.d("MSM", phoneAct.getText().toString());
+            buff_phones.add(phoneAct.getText().toString());
+        }
+        outState.putStringArrayList(KEY_ARRAY, buff_phones);
         outState.putString(KEY_STRING, birthText);
         outState.putParcelable(KEY_URI, image_uri);
+        outState.putBoolean(KEY_BOOL, flag);
         super.onSaveInstanceState(outState);
     }
 
@@ -211,6 +268,8 @@ public class EditContactActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         birthText = savedInstanceState.getString(KEY_STRING);
         image_uri = savedInstanceState.getParcelable(KEY_URI);
+        flag = savedInstanceState.getBoolean(KEY_BOOL);
+        buff_phones =  savedInstanceState.getStringArrayList(KEY_ARRAY);
     }
 
     @Override
@@ -224,8 +283,9 @@ public class EditContactActivity extends AppCompatActivity {
                 Toast.makeText(EditContactActivity.this, R.string.error_get_image_2, Toast.LENGTH_LONG).show();
                 profilePhoto.setImageResource(R.drawable.ic_person);
                 image_uri = null;
-                flag = true;
             }
+
+            flag = true;
         }
     }
 
@@ -250,5 +310,11 @@ public class EditContactActivity extends AppCompatActivity {
                 Toast.makeText(this, getString(R.string.intent_read_image), Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
     }
 }

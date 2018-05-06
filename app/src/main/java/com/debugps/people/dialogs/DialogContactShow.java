@@ -101,22 +101,26 @@ public class DialogContactShow extends DialogFragment {
             favButton.setCircleBackgroundColorResource(R.color.MaterialBlueGrey900);
         }
 
-        if(!contact.getEmail().equals("")){
-            LinearLayout viewEmails = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_phones, null);
-            TextView title =  viewEmails.findViewById(R.id.dialog_phone_title);
-            TextView content =  viewEmails.findViewById(R.id.dialog_phone_child);
-            title.setText(R.string.edit_text_email);
-            content.setText(contact.getEmail());
-            emailLayout.addView(viewEmails);
+        if(contact.getEmail() != null){
+            if(!contact.getEmail().equals("")){
+                LinearLayout viewEmails = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_phones, null);
+                TextView title =  viewEmails.findViewById(R.id.dialog_phone_title);
+                TextView content =  viewEmails.findViewById(R.id.dialog_phone_child);
+                title.setText(R.string.edit_text_email);
+                content.setText(contact.getEmail());
+                emailLayout.addView(viewEmails);
+            }
         }
 
-        if(!contact.getBirthday().equals("")){
-            LinearLayout viewBirth = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_phones, null);
-            TextView title =  viewBirth.findViewById(R.id.dialog_phone_title);
-            TextView content =  viewBirth.findViewById(R.id.dialog_phone_child);
-            title.setText(R.string.edit_text_birth);
-            content.setText(contact.getBirthday());
-            emailLayout.addView(viewBirth);
+        if(contact.getBirthday()!= null){
+            if(!contact.getBirthday().equals("")){
+                LinearLayout viewBirth = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_phones, null);
+                TextView title =  viewBirth.findViewById(R.id.dialog_phone_title);
+                TextView content =  viewBirth.findViewById(R.id.dialog_phone_child);
+                title.setText(R.string.edit_text_birth);
+                content.setText(contact.getBirthday());
+                emailLayout.addView(viewBirth);
+            }
         }
 
         if(contact.getPhoneNumbers() !=  null){

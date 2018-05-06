@@ -9,6 +9,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -20,6 +21,8 @@ import android.widget.Toast;
 
 import com.debugps.people.data.Contact;
 
+import java.util.ArrayList;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AddContactActivity extends AppCompatActivity {
@@ -29,18 +32,21 @@ public class AddContactActivity extends AppCompatActivity {
 
     public static final String KEY_URI = "Spaceman";
     public static final String KEY_CONTACT = "PrizeFighter";
+    private static final String KEY_ARRAY = "MagoDeOz";
 
     private ImageView profilePhoto;
     private CircleImageView putImageButton;
     private CircleImageView putNewPhone;
     private ImageButton addButton;
 
-    private LinearLayout linearLayoutPhones;
+    private LinearLayout phonesLayout;
 
     private EditText nameInput;
     private EditText phoneInput;
     private EditText emailInput;
     private Button birthInput;
+
+    private ArrayList<String> buff_phones;
 
     private Uri image_uri;
 
@@ -50,6 +56,12 @@ public class AddContactActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contact);
+
+        if(savedInstanceState != null){
+            buff_phones = savedInstanceState.getStringArrayList(KEY_ARRAY);
+        }else {
+            buff_phones= null;
+        }
 
         profilePhoto = findViewById(R.id.layout_add_profile_photo);
         putImageButton = findViewById(R.id.layout_add_put_image_button);
@@ -61,7 +73,24 @@ public class AddContactActivity extends AppCompatActivity {
         emailInput = findViewById(R.id.layout_add_email);
         birthInput = findViewById(R.id.layout_add_birthday);
 
-        linearLayoutPhones =  findViewById(R.id.linear_layout_new_contact_phones);
+        phonesLayout =  findViewById(R.id.linear_layout_new_contact_phones);
+
+        if(buff_phones != null){
+            //Log.d("MSMSMSMSM", buff_phones.toString());
+            for(int i=0; i<buff_phones.size(); i++){
+                final LinearLayout viewNewPhone = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_add_phone, null);
+                CircleImageView removeButton =  viewNewPhone.findViewById(R.id.layout_remove_phone_button);
+                EditText editTxt= viewNewPhone.findViewById(R.id.layout_add_phone_new);
+                removeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        phonesLayout.removeView(viewNewPhone);
+                    }});
+                phonesLayout.addView(viewNewPhone);
+            }
+        }else{
+            buff_phones = new ArrayList<>();
+        }
     }
 
     @Override
@@ -69,6 +98,15 @@ public class AddContactActivity extends AppCompatActivity {
         super.onResume();
         final int colorContact =MainActivity.getColorId();
         int colorButtons = R.color.MaterialBlueGrey900;
+
+        if(buff_phones != null){
+            if(buff_phones.size() !=0){
+                for(int i = 0; i<phonesLayout.getChildCount();i++){
+                    EditText edt = phonesLayout.getChildAt(i).findViewById(R.id.layout_add_phone_new);
+                    edt.setText(buff_phones.get(i));
+                }
+            }
+        }
 
         if(birhtday == null){
             birthInput.setHint(R.string.edit_text_birth);
@@ -132,8 +170,8 @@ public class AddContactActivity extends AppCompatActivity {
                 contact.setColorId(colorContact);
                 contact.setProfileImage(image_uri);
 
-                for(int i = 0; i< linearLayoutPhones.getChildCount(); i++){
-                    View view = linearLayoutPhones.getChildAt(i);
+                for(int i = 0; i< phonesLayout.getChildCount(); i++){
+                    View view = phonesLayout.getChildAt(i);
                     EditText phoneAct = view.findViewById(R.id.layout_add_phone_new);
                     contact.setPhoneNumber(phoneAct.getText().toString());
                 }
@@ -153,15 +191,23 @@ public class AddContactActivity extends AppCompatActivity {
                 removeButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                         linearLayoutPhones.removeView(viewNewPhone);
+                         phonesLayout.removeView(viewNewPhone);
                      }});
-                 linearLayoutPhones.addView(viewNewPhone);
+                 phonesLayout.addView(viewNewPhone);
             }
         });
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        buff_phones.clear();
+        for(int i = 0; i< phonesLayout.getChildCount(); i++){
+            View view = phonesLayout.getChildAt(i);
+            EditText phoneAct = view.findViewById(R.id.layout_add_phone_new);
+            //Log.d("MSM", phoneAct.getText().toString());
+            buff_phones.add(phoneAct.getText().toString());
+        }
+        outState.putStringArrayList(KEY_ARRAY, buff_phones);
         outState.putString(KEY_STRING_BIRTH, birhtday);
         outState.putParcelable(KEY_URI, image_uri);
         super.onSaveInstanceState(outState);
@@ -172,6 +218,7 @@ public class AddContactActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         birhtday = savedInstanceState.getString(KEY_STRING_BIRTH);
         image_uri = savedInstanceState.getParcelable(KEY_URI);
+        buff_phones =  savedInstanceState.getStringArrayList(KEY_ARRAY);
     }
 
     @Override

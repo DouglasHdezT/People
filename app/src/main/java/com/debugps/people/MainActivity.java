@@ -188,6 +188,16 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                     contactsRecent_list.set(indexRec, contact1);
                     contactsRecentAdapter.notifyDataSetChanged();
                 }
+
+                if(isLandscape()){
+                    LandscapeViewFragment landscapeViewFragment = LandscapeViewFragment.newInstance(contact1);
+                    FragmentTransaction ft =  getSupportFragmentManager().beginTransaction();
+                    ft.replace(R.id.contact_container_main, landscapeViewFragment);
+                    ft.commit();
+                }else{
+                    DialogContactShow dialogContactShow = DialogContactShow.newInstance(contact1);
+                    dialogContactShow.show(getSupportFragmentManager(), "dialog");
+                }
             }
         }
     }
@@ -236,6 +246,10 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 contactsFavoritesAdapter.notifyDataSetChanged();
                 sortList(contactsFav_list);
                 contactsFavoritesAdapter.notifyItemRangeChanged(0, contactsFav_list.size());
+                if(isLandscape()){
+                    showContactLandscape(contacts_list.get(position), getSupportFragmentManager());
+                }
+
             }
 
             @Override
@@ -246,6 +260,10 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 contactsFavoritesAdapter.notifyItemRemoved(favPosition);
                 contactsFavoritesAdapter.notifyItemRangeChanged(favPosition, contactsFav_list.size());
                 notifyDataSetChanged();
+
+                if(isLandscape()){
+                    showContactLandscape(contacts_list.get(position), getSupportFragmentManager());
+                }
             }
         };
 
@@ -262,6 +280,9 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 contactsFavoritesAdapter.notifyItemRemoved(position);
                 contactsFavoritesAdapter.notifyItemRangeChanged(position, contactsFav_list.size());
 
+                if(isLandscape()){
+                    showContactLandscape(contacts_list.get(posD), getSupportFragmentManager());
+                }
             }
         };
 

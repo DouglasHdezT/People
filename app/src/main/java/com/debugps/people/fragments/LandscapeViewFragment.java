@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.debugps.people.MainActivity;
 import com.debugps.people.R;
 import com.debugps.people.data.Contact;
+import com.debugps.people.dialogs.DialogContactShow;
 import com.debugps.people.intefaces.OnSettingContact;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -28,15 +29,17 @@ public class LandscapeViewFragment extends Fragment {
     private Contact contact;
 
     private TextView name;
-    private TextView phone;
-    private TextView email;
-    private TextView birth;
 
     private ImageView profilePhoto;
     private CircleImageView shareButton;
     private CircleImageView callButton;
+    private CircleImageView favButton;
+    private CircleImageView removeButton;
+    private CircleImageView editButton;
 
     private LinearLayout phonesLayout;
+    private LinearLayout emailLayout;
+    private LinearLayout birthLayout;
 
     private OnSettingContact onSettingContact;
 
@@ -59,18 +62,20 @@ public class LandscapeViewFragment extends Fragment {
         View view= inflater.inflate(R.layout.layout_contact_show_landscape,container, false);
 
         name = view.findViewById(R.id.layout_landscape_name);
-        birth = view.findViewById(R.id.layout_landscape_birth);
-        email = view.findViewById(R.id.layout_landscape_email);
 
         profilePhoto =  view.findViewById(R.id.layout_landscape_profile_photo);
         shareButton = view.findViewById(R.id.layout_landscape_share);
         callButton = view.findViewById(R.id.layout_landscape_call);
 
-        name.setText(contact.getName());
-        birth.setText(contact.getBirthday());
-        email.setText(contact.getEmail());
+        removeButton = view.findViewById(R.id.landscape_remove_button);
+        favButton = view.findViewById(R.id.landscape_fav_button);
+        editButton = view.findViewById(R.id.landscape_edit_button);
 
         phonesLayout = view.findViewById(R.id.linear_layout_phones_parent);
+        emailLayout = view.findViewById(R.id.linear_layout_email_parent);
+        birthLayout = view.findViewById(R.id.linear_layout_birthday_parent);
+
+        name.setText(contact.getName());
 
         for(int i=0;i<contact.getPhoneNumbers().size();i++){
             LinearLayout viewEditText = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_phones_landscape, phonesLayout,false);
@@ -88,6 +93,34 @@ public class LandscapeViewFragment extends Fragment {
             txt2.setText(phoneN);
 
             phonesLayout.addView(viewEditText);
+        }
+
+        if(contact.getEmail() != null){
+            if(!contact.getEmail().equals("")){
+                LinearLayout viewEmails = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_phones_landscape, null);
+                TextView title =  viewEmails.findViewById(R.id.dialog_phone_title);
+                TextView content =  viewEmails.findViewById(R.id.dialog_phone_child);
+                title.setText(R.string.edit_text_email);
+                content.setText(contact.getEmail());
+                emailLayout.addView(viewEmails);
+            }
+        }
+
+        if(contact.getBirthday()!= null){
+            if(!contact.getBirthday().equals("")){
+                LinearLayout viewBirth = (LinearLayout) getLayoutInflater().inflate(R.layout.linear_layout_phones_landscape, null);
+                TextView title =  viewBirth.findViewById(R.id.dialog_phone_title);
+                TextView content =  viewBirth.findViewById(R.id.dialog_phone_child);
+                title.setText(R.string.edit_text_birth);
+                content.setText(contact.getBirthday());
+                emailLayout.addView(viewBirth);
+            }
+        }
+
+        if(contact.isFavorite()){
+            favButton.setCircleBackgroundColorResource(R.color.star_color);
+        }else{
+            favButton.setCircleBackgroundColorResource(R.color.MaterialBlueGrey900);
         }
 
         if(contact.getProfileImage() == null){
@@ -108,6 +141,45 @@ public class LandscapeViewFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 MainActivity.shareContact(getContext(),contact);
+            }
+        });
+
+        removeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSettingContact.removeContact(contact);
+                FragmentTransaction ft;
+                if (getFragmentManager() != null) {
+                    ft = getFragmentManager().beginTransaction();
+                    ft.remove(LandscapeViewFragment.this);
+                    ft.commit();
+                }
+            }
+        });
+
+        favButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(contact.isFavorite()){
+                    onSettingContact.unsetFavorited(contact);
+                    favButton.setCircleBackgroundColorResource(R.color.MaterialBlueGrey900);
+                }else{
+                    onSettingContact.setFavorited(contact);
+                    favButton.setCircleBackgroundColorResource(R.color.star_color);
+                }
+            }
+        });
+
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSettingContact.editContact(contact);
+                FragmentTransaction ft;
+                if (getFragmentManager() != null) {
+                    ft = getFragmentManager().beginTransaction();
+                    ft.remove(LandscapeViewFragment.this);
+                    ft.commit();
+                }
             }
         });
 

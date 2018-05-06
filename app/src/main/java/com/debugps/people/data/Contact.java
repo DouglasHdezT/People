@@ -5,6 +5,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.debugps.people.R;
+
 import java.util.ArrayList;
 
 public class Contact implements Parcelable, Comparable<Contact> {
@@ -12,13 +14,13 @@ public class Contact implements Parcelable, Comparable<Contact> {
     //AREA DE VARIABLES.
     private boolean favorite = false;
 
-    private String name;
-    private String email;
-    private String birthday;
-    private String lastCalled;
+    private String name = "";
+    private String email = "";
+    private String birthday = "";
+    private String lastCalled = "";
 
     private int cantCalls = 0 ;
-    private int colorId;
+    private int colorId = R.color.MaterialDeepPurple900;
 
     private Uri profileImage;
 
