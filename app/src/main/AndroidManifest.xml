@@ -21,24 +21,34 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/plain" />
+                <data android:mimeType="image/*" />
             </intent-filter>
-
         </activity>
-        <activity android:name=".AddContactActivity"
+        <activity
+            android:name=".AddContactActivity"
             android:label="@string/add_contact_text"
-            android:parentActivityName="com.debugps.people.MainActivity"
+            android:parentActivityName=".MainActivity"
             android:windowSoftInputMode="stateHidden">
-
-            <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.debugps.people.MainActivity"
-                />
-
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.debugps.people.MainActivity" />
+        </activity>
+        <activity android:name=".EditContactActivity"
+            android:label="@string/edit_activity_label"
+            android:parentActivityName=".MainActivity"
+            android:windowSoftInputMode="stateHidden">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.debugps.people.MainActivity" />
         </activity>
     </application>
 

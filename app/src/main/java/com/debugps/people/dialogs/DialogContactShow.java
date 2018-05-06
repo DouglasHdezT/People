@@ -150,7 +150,8 @@ public class DialogContactShow extends DialogFragment {
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                onSettingContact.editContact(contact);
+                DialogContactShow.this.dismiss();
             }
         });
 

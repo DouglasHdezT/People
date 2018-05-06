@@ -7,4 +7,5 @@ public interface OnSettingContact {
     void unsetFavorited(Contact contact);
     void callContact(Contact contact);
     void removeContact(Contact contact);
+    void editContact(Contact contact);
 }

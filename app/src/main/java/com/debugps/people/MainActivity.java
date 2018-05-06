@@ -60,17 +60,18 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     public static  final int READ_CONTACTS_KEY= 123;
     private static final int CALL_PHONE_KEY = 666;
     private static final int GET_NEW_CONTACT_KEY = 127;
+    private static final int EDIT_CONTACT_CODE = 2002;
 
 
     public static final String KEY_SAVED_INSTANCE_STATE = "ADustlandFairytale";
+    public static final String KEY_EDIT_CONTACT = "RockTheHouse";
+    public static final String KEY_INT_POSITION = "PasenYBeban";
 
     private static Random rn = new Random();
 
     protected static ArrayList<Contact> contacts_list = new ArrayList<>();
     private static ArrayList<Contact> contactsFav_list = new ArrayList<>();
     private static ArrayList<Contact> contactsRecent_list = new ArrayList<>();
-
-    private static ArrayList<Contact> query_result_list = new ArrayList<>();
 
     private static CarryBoy carryBoy = new CarryBoy();
 
@@ -163,6 +164,30 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 contactsDefaultAdapter.notifyItemInserted(contacts_list.size() - 1);
                 Collections.sort(contacts_list);
                 contactsDefaultAdapter.notifyDataSetChanged();
+            }
+        }else if(requestCode == EDIT_CONTACT_CODE){
+            if(resultCode == RESULT_OK){
+                int defPosition =data.getIntExtra(KEY_INT_POSITION, 0);
+                Contact contact1 = data.getParcelableExtra(MainActivity.KEY_EDIT_CONTACT);
+                Contact contact = contacts_list.get(defPosition);
+
+                int indexFav= contactsFav_list.indexOf(contact);
+                int indexRec= contactsRecent_list.indexOf(contact);
+
+                Log.d("MSM", contact.getName());
+
+                contacts_list.set(defPosition, contact1);
+                contactsDefaultAdapter.notifyDataSetChanged();
+
+                if(indexFav >=0){
+                    contactsFav_list.set(indexFav, contact1);
+                    contactsFavoritesAdapter.notifyDataSetChanged();
+                }
+
+                if(indexRec >=0){
+                    contactsRecent_list.set(indexRec, contact1);
+                    contactsRecentAdapter.notifyDataSetChanged();
+                }
             }
         }
     }
@@ -529,7 +554,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     @Override
     public void removeContact(Contact contact) {
-        boolean isFavorited = contact.isFavorite();
         int positionFav = contactsFav_list.indexOf(contact);
         int position  = contacts_list. indexOf(contact);
         int positionRec = contactsRecent_list.indexOf(contact);
@@ -549,6 +573,14 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         contacts_list.remove(position);
         contactsDefaultAdapter.notifyItemRemoved(position);
         contactsDefaultAdapter.notifyItemRangeChanged(position, contacts_list.size());
+    }
+
+    @Override
+    public void editContact(Contact contact) {
+        Intent i = new Intent(MainActivity.this, EditContactActivity.class);
+        i.putExtra(KEY_EDIT_CONTACT, contact);
+        i.putExtra(KEY_INT_POSITION, contacts_list.indexOf(contact));
+        startActivityForResult(i, EDIT_CONTACT_CODE);
     }
 
     //Metodos para realizar llamadas.
