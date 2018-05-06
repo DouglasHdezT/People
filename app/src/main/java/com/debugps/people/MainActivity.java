@@ -313,10 +313,32 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     public static void shareContact(Context context, Contact contact){
 
         Intent i = new Intent(Intent.ACTION_SEND);
+        String text=context.getString(R.string.contact_share_text)+"\n" +context.getString(R.string.name_share_text)+ contact.getName();
 
-        String text="Contacto: "+ contact.getName() + "\nTelefono: "+contact.getPhoneNumbers();
+        if(contact.getPhoneNumbers() != null){
+            if(contact.getPhoneNumbers().size()>0){
+                for (int j = 0; j< contact.getPhoneNumbers().size(); j++){
+                    text = text + "\n"+ context.getString(R.string.phone_share_text)+(j+1)+": "+contact.getPhoneNumber(j);
+                }
+            }
+        }
+
+        if(!contact.getEmail().equals("")){
+            text =  text + "\n" + context.getString(R.string.email_share_text)+ contact.getEmail();
+        }
+
+        if(!contact.getBirthday().equals("")){
+            text =  text + "\n" + context.getString(R.string.birthday_share_text) + contact.getBirthday();
+        }
+
         i.putExtra(Intent.EXTRA_TEXT, text);
-        i.setType("text/plain");
+
+        if(contact.getProfileImage() != null){
+            i.putExtra(Intent.EXTRA_STREAM, contact.getProfileImage());
+            i.setType("*/*");
+        }else{
+            i.setType("text/plain");
+        }
 
         try {
             context.startActivity(Intent.createChooser(i, context.getString(R.string.intent_title)));

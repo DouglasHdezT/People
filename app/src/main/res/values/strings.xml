@@ -25,4 +25,9 @@
     <string name="call_intent_text">We cannot call until you grant us permission</string>
     <string name="ask_call_dialog">Witch number?</string>
     <string name="edit_activity_label">Edit Contact</string>
+    <string name="contact_share_text">Contact:</string>
+    <string name="name_share_text">Name:</string>
+    <string name="phone_share_text">Phone</string>
+    <string name="email_share_text">Email:</string>
+    <string name="birthday_share_text">Birthday:</string>
 </resources>

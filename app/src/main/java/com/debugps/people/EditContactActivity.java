@@ -222,6 +222,10 @@ public class EditContactActivity extends AppCompatActivity {
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(name.getText().toString().equals("")){
+                    Toast.makeText(EditContactActivity.this, R.string.error_add_contact, Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 contact.getPhoneNumbers().clear();
                 contact.setPhoneNumber(principalPhone.getText().toString());
                 contact.setName(name.getText().toString());

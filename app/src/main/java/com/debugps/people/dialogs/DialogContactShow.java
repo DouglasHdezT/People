@@ -68,10 +68,10 @@ public class DialogContactShow extends DialogFragment {
             DialogContactShow.this.dismiss();
             return null;
         }
+        getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         Rect displayRectangle = new Rect();
         Window window = getActivity().getWindow();
         window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
-
 
         View view = inflater.inflate(R.layout.dialog_contact_show, container, false);
 
@@ -79,6 +79,7 @@ public class DialogContactShow extends DialogFragment {
         view.setMinimumHeight((int) (displayRectangle.height() * 0.9f));
 
         name = view.findViewById(R.id.dialog_name);
+
 
         profilePhoto = view.findViewById(R.id.dialog_profile_photo);
         shareButton = view.findViewById(R.id.dialog_share);
