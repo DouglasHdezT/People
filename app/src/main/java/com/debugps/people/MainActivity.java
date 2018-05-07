@@ -63,12 +63,15 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     private static final int GET_NEW_CONTACT_KEY = 127;
     private static final int EDIT_CONTACT_CODE = 2002;
 
+    private boolean inSearch = false;
 
     public static final String KEY_SAVED_INSTANCE_STATE = "ADustlandFairytale";
     public static final String KEY_EDIT_CONTACT = "RockTheHouse";
     public static final String KEY_INT_POSITION = "PasenYBeban";
 
     private static Random rn = new Random();
+
+    private static CarryBoy carryBoy = new CarryBoy();
 
     protected static ArrayList<Contact> contacts_list = new ArrayList<>();
     private static ArrayList<Contact> contactsFav_list = new ArrayList<>();
@@ -77,8 +80,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     protected static ArrayList<Contact> contacts_list_query;
     private static ArrayList<Contact> contactsFav_list_query;
     private static ArrayList<Contact> contactsRecent_list_query;
-
-    private static CarryBoy carryBoy = new CarryBoy();
 
     private ContactsDefaultAdapter contactsDefaultAdapter;
     private ContactsFavoritesAdapter contactsFavoritesAdapter;
@@ -187,11 +188,11 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
                 int indexFav= contactsFav_list.indexOf(contact);
                 int indexRec= contactsRecent_list.indexOf(contact);
+                int indexQuery =  contacts_list_query.indexOf(contact);
 
                 Log.d("MSM", contact.getName());
 
                 contacts_list.set(defPosition, contact1);
-                contactsDefaultAdapter.notifyDataSetChanged();
 
                 if(indexFav >=0){
                     contactsFav_list.set(indexFav, contact1);
@@ -202,6 +203,11 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                     contactsRecent_list.set(indexRec, contact1);
                     contactsRecentAdapter.notifyDataSetChanged();
                 }
+
+                if(indexQuery>=0){
+                    contacts_list_query.set(indexQuery, contact1);
+                }
+                contactsDefaultAdapter.notifyDataSetChanged();
 
                 if(isLandscape()){
                     LandscapeViewFragment landscapeViewFragment = LandscapeViewFragment.newInstance(contact1);
@@ -254,21 +260,39 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             @Override
             public void agregar(int position) {
                 int favPosition;
-                contactsFav_list.add(contacts_list.get(position));
-                favPosition = contactsFav_list.indexOf(contacts_list.get(position));
+
+                if(inSearch){
+                    contactsFav_list.add(contacts_list_query.get(position));
+                    favPosition = contactsFav_list.indexOf(contacts_list_query.get(position));
+                }else{
+                    contactsFav_list.add(contacts_list.get(position));
+                    favPosition = contactsFav_list.indexOf(contacts_list.get(position));
+                }
+
                 contactsFavoritesAdapter.notifyItemInserted(favPosition);
                 contactsFavoritesAdapter.notifyDataSetChanged();
                 sortList(contactsFav_list);
                 contactsFavoritesAdapter.notifyItemRangeChanged(0, contactsFav_list.size());
+
                 if(isLandscape()){
-                    showContactLandscape(contacts_list.get(position), getSupportFragmentManager());
+                    if(inSearch){
+                        showContactLandscape(contacts_list_query.get(position), getSupportFragmentManager());
+                    }else{
+                        showContactLandscape(contacts_list.get(position), getSupportFragmentManager());
+                    }
                 }
 
             }
 
             @Override
             public void remover(int position) {
-                Contact c = contacts_list.get(position);
+                Contact c;
+                if(inSearch){
+                    c = contacts_list_query.get(position);
+                }else{
+                    c = contacts_list.get(position);
+                }
+
                 int favPosition = contactsFav_list.indexOf(c);
                 contactsFav_list.remove(favPosition);
                 contactsFavoritesAdapter.notifyItemRemoved(favPosition);
@@ -276,7 +300,11 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 notifyDataSetChanged();
 
                 if(isLandscape()){
-                    showContactLandscape(contacts_list.get(position), getSupportFragmentManager());
+                    if(inSearch){
+                        showContactLandscape(contacts_list_query.get(position), getSupportFragmentManager());
+                    }else{
+                        showContactLandscape(contacts_list.get(position), getSupportFragmentManager());
+                    }
                 }
             }
         };
@@ -285,9 +313,16 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             @Override
             public void remover(int position) {
                 Contact cFav = contactsFav_list.get(position);
-                int posD = contacts_list.indexOf(cFav);
+                int posD;
 
-                contacts_list.get(posD).setFavorite(false);
+                if(inSearch){
+                    posD = contacts_list_query.indexOf(cFav);
+                    contacts_list_query.get(posD).setFavorite(false);
+                }else{
+                    posD = contacts_list.indexOf(cFav);
+                    contacts_list.get(posD).setFavorite(false);
+                }
+
                 contactsDefaultAdapter.notifyItemChanged(posD);
 
                 contactsFav_list.remove(position);
@@ -295,7 +330,11 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 contactsFavoritesAdapter.notifyItemRangeChanged(position, contactsFav_list.size());
 
                 if(isLandscape()){
-                    showContactLandscape(contacts_list.get(posD), getSupportFragmentManager());
+                    if(inSearch){
+                        showContactLandscape(contacts_list_query.get(position), getSupportFragmentManager());
+                    }else{
+                        showContactLandscape(contacts_list.get(position), getSupportFragmentManager());
+                    }
                 }
             }
         };
@@ -388,18 +427,13 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             public boolean onQueryTextChange(String newText) {
                 if(newText.equals("")){
                     contactsDefaultAdapter.chargeFilter(contacts_list);
-                    contactsFavoritesAdapter.chargeFilter(contactsFav_list);
-                    contactsRecentAdapter.chargeFilter(contactsRecent_list);
+                    inSearch = false;
                     return true;
                 }
 
+                inSearch = true;
                 contacts_list_query = filterData(contacts_list, newText);
-                contactsFav_list_query = filterData(contactsFav_list, newText);
-                contactsRecent_list_query = filterData(contactsRecent_list, newText);
-
                 contactsDefaultAdapter.chargeFilter(contacts_list_query);
-                contactsFavoritesAdapter.chargeFilter(contactsFav_list_query);
-                contactsRecentAdapter.chargeFilter(contactsRecent_list_query);
 
                 return true;
             }
@@ -650,8 +684,9 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     @Override
     public void removeContact(Contact contact) {
+        int position  = contacts_list.indexOf(contact);
         int positionFav = contactsFav_list.indexOf(contact);
-        int position  = contacts_list. indexOf(contact);
+        int positionQuery = contacts_list_query.indexOf(contact);
         int positionRec = contactsRecent_list.indexOf(contact);
 
         if(positionFav >= 0){
@@ -667,8 +702,15 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         }
 
         contacts_list.remove(position);
-        contactsDefaultAdapter.notifyItemRemoved(position);
-        contactsDefaultAdapter.notifyItemRangeChanged(position, contacts_list.size());
+        if(positionQuery>=0){
+            contacts_list_query.remove(positionQuery);
+            contactsDefaultAdapter.notifyItemRemoved(positionQuery);
+            contactsDefaultAdapter.notifyItemRangeChanged(positionQuery, contacts_list_query.size());
+        }else{
+            contactsDefaultAdapter.notifyItemRemoved(position);
+            contactsDefaultAdapter.notifyItemRangeChanged(position, contacts_list.size());
+        }
+
     }
 
     @Override

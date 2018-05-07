@@ -12,8 +12,9 @@
         app:tabTextColor="@color/colorPrimaryText"
         app:tabSelectedTextColor="@android:color/white"
         app:tabMode="fixed"
+        app:tabIndicatorColor="@color/colorPrimary"
         app:tabGravity="fill"
-        android:background="@color/colorPrimary"/>
+        android:background="@android:color/white"/>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager_main"

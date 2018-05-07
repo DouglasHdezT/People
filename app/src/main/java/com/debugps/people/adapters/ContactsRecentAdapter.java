@@ -104,9 +104,4 @@ public class ContactsRecentAdapter extends RecyclerView.Adapter<ContactsRecentAd
     public int getItemCount() {
         return contacts_list.size();
     }
-
-    public void chargeFilter(ArrayList<Contact> contacts){
-        this.contacts_list = contacts;
-        notifyDataSetChanged();
-    }
 }

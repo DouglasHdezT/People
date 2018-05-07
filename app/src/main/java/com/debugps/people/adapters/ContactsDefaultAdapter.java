@@ -102,6 +102,7 @@ public abstract class ContactsDefaultAdapter extends RecyclerView.Adapter<Contac
             public void onClick(View v) {
                 if(isFavorited){
                     contacts.get(position).setFavorite(false);
+                    notifyDataSetChanged();
                     remover(position);
                 }else{
                     contacts.get(position).setFavorite(true);
@@ -135,5 +136,6 @@ public abstract class ContactsDefaultAdapter extends RecyclerView.Adapter<Contac
     public void chargeFilter(ArrayList<Contact> contacts){
         this.contacts = contacts;
         notifyDataSetChanged();
+        notifyItemRangeChanged(0, contacts.size());
     }
 }
