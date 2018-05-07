@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">People</string>
+    <string name="search_title">Buscar...</string>
+    <string name="intent_title">Compartir Contacto</string>
+    <string name="read_contact_permission">No podemos mostrar nada si tu permiso</string>
+    <string name="card_view_default_name_text">nombre</string>
+    <string name="card_view_phone_number_text">Telefono:</string>
+    <string name="card_view_cap_letter">N</string>
+    <string name="email_text">Correo:</string>
+    <string name="birthday_text">Cumpleaños:</string>
+    <string name="add_contact_text">Añadir Contacto</string>
+    <string name="edit_text_name">Nombre</string>
+    <string name="edit_text_phone">Telefono</string>
+    <string name="edit_text_email">Correo</string>
+    <string name="edit_text_birth">Cumpleaños</string>
+    <string name="name_two_dots">Nombre:</string>
+    <string name="parcial_phone_text">Telefono:</string>
+    <string name="intent_read_image">No podemos obtener imagenes sin permisos</string>
+    <string name="error_get_image_1">Algo anda mal!</string>
+    <string name="error_get_image_2">No seleccionaste nada</string>
+    <string name="error_add_contact">Por lo menos el nombre</string>
+    <string name="call_intent_text">No podemos llamar si tu permiso</string>
+    <string name="ask_call_dialog">¿Número?</string>
+    <string name="edit_activity_label">Editar Contacto</string>
+    <string name="contact_share_text">Contacto:</string>
+    <string name="name_share_text">"Nombre: "</string>
+    <string name="phone_share_text">"Telefono "</string>
+    <string name="email_share_text">"Correo: "</string>
+    <string name="birthday_share_text">"Cumpleaños: "</string>
+</resources>

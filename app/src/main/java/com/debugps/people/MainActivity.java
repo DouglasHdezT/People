@@ -118,7 +118,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
         if(contacts_list.size() == 0){
             SecuredAddContacts();
-            Collections.sort(contacts_list);
         }
 
         contactsDefaultAdapter.notifyItemRangeChanged(0, contacts_list.size());
@@ -260,13 +259,16 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             @Override
             public void agregar(int position) {
                 int favPosition;
+                Contact c;
 
                 if(inSearch){
+                    c= contacts_list_query.get(position);
                     contactsFav_list.add(contacts_list_query.get(position));
-                    favPosition = contactsFav_list.indexOf(contacts_list_query.get(position));
+                    favPosition = contactsFav_list.indexOf(c);
                 }else{
+                    c = contacts_list.get(position);
                     contactsFav_list.add(contacts_list.get(position));
-                    favPosition = contactsFav_list.indexOf(contacts_list.get(position));
+                    favPosition = contactsFav_list.indexOf(c);
                 }
 
                 contactsFavoritesAdapter.notifyItemInserted(favPosition);
@@ -275,11 +277,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 contactsFavoritesAdapter.notifyItemRangeChanged(0, contactsFav_list.size());
 
                 if(isLandscape()){
-                    if(inSearch){
-                        showContactLandscape(contacts_list_query.get(position), getSupportFragmentManager());
-                    }else{
-                        showContactLandscape(contacts_list.get(position), getSupportFragmentManager());
-                    }
+                    showContactLandscape(c, getSupportFragmentManager());
                 }
 
             }
@@ -300,11 +298,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 notifyDataSetChanged();
 
                 if(isLandscape()){
-                    if(inSearch){
-                        showContactLandscape(contacts_list_query.get(position), getSupportFragmentManager());
-                    }else{
-                        showContactLandscape(contacts_list.get(position), getSupportFragmentManager());
-                    }
+                    showContactLandscape(c, getSupportFragmentManager());
                 }
             }
         };
@@ -314,14 +308,11 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             public void remover(int position) {
                 Contact cFav = contactsFav_list.get(position);
                 int posD;
+                Contact c;
 
-                if(inSearch){
-                    posD = contacts_list_query.indexOf(cFav);
-                    contacts_list_query.get(posD).setFavorite(false);
-                }else{
-                    posD = contacts_list.indexOf(cFav);
-                    contacts_list.get(posD).setFavorite(false);
-                }
+                posD = contacts_list.indexOf(cFav);
+                contacts_list.get(posD).setFavorite(false);
+                c = contacts_list.get(posD);
 
                 contactsDefaultAdapter.notifyItemChanged(posD);
 
@@ -330,11 +321,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 contactsFavoritesAdapter.notifyItemRangeChanged(position, contactsFav_list.size());
 
                 if(isLandscape()){
-                    if(inSearch){
-                        showContactLandscape(contacts_list_query.get(position), getSupportFragmentManager());
-                    }else{
-                        showContactLandscape(contacts_list.get(position), getSupportFragmentManager());
-                    }
+                    showContactLandscape(c, getSupportFragmentManager());
                 }
             }
         };
@@ -549,6 +536,9 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                     contact.setColorId(getColorId());
 
                     contacts_list.add(contact);
+                    contactsDefaultAdapter.notifyDataSetChanged();
+                    Collections.sort(contacts_list);
+                    contactsDefaultAdapter.notifyItemRangeChanged(0,contacts_list.size());
 
                 }
             }
