@@ -455,6 +455,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     }
 
     public void addContacts(){
+        contacts_list.clear();
         Contact contact;
         String phoneNumber = null;
         String email = null;
