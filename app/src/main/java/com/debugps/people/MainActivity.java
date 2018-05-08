@@ -322,6 +322,10 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     }
 
+    /*
+    Metodos estaticos para mostrar la informacion del contacto tanto en Landscape como en Potrait
+     */
+
     public static void showContactPotrait(Contact contact, FragmentManager fragmentManager) {
         if (contact != null) {
             DialogContactShow dialogContactShow = DialogContactShow.newInstance(contact);
@@ -340,7 +344,9 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     }
 
-
+    /*
+    Metodo para compartir la informacion del contacto
+     */
 
     public static void shareContact(Context context, Contact contact){
 
@@ -383,6 +389,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
 
     /*
     Inflando el boton de busqueda en la ActionBar...
+    Ademas metodo para filtar cualquier arreglo con una query
      */
 
     @Override
@@ -446,6 +453,9 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         return filtered;
     }
 
+    /*
+    Metodo para añadir los contactos del telefono cuando se inicia la app
+     */
     public void addContacts(){
         contacts_list.clear();
         Contact contact;
@@ -530,6 +540,41 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         }
     }
 
+    public void SecuredAddContacts(){
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                checkSelfPermission(Manifest.permission.READ_CONTACTS) !=  PackageManager.PERMISSION_GRANTED){
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, READ_CONTACTS_KEY);
+        }else{
+            addContacts();
+            contactsDefaultAdapter.notifyItemRangeChanged(0, contacts_list.size());
+        }
+    }
+
+    /*
+    * Metodo que escucha repuestas a intents que han sido llamados
+    * */
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == READ_CONTACTS_KEY){
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                SecuredAddContacts();
+            }else{
+                Toast.makeText(this, getString(R.string.read_contact_permission), Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        if(requestCode == CALL_PHONE_KEY){
+            if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(this, R.string.call_intent_text, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    /*
+    Paleta Material 900 aleatoria
+     */
     public static int getColorId(){
         //Random rn2 = new Random();
         int rnNumber = Math.abs((rn.nextInt() % 17)) + 1;
@@ -592,38 +637,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         return idColor;
     }
 
-    public void SecuredAddContacts(){
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                checkSelfPermission(Manifest.permission.READ_CONTACTS) !=  PackageManager.PERMISSION_GRANTED){
-            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, READ_CONTACTS_KEY);
-        }else{
-            addContacts();
-            contactsDefaultAdapter.notifyItemRangeChanged(0, contacts_list.size());
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode == READ_CONTACTS_KEY){
-            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                SecuredAddContacts();
-            }else{
-                Toast.makeText(this, getString(R.string.read_contact_permission), Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        if(requestCode == CALL_PHONE_KEY){
-            if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(this, R.string.call_intent_text, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    public boolean isLandscape(){
-        return getResources().getConfiguration().orientation != Configuration.ORIENTATION_PORTRAIT;
-    }
-
     public static void sortList(ArrayList<Contact> list){
         Collections.sort(list, new Comparator<Contact>() {
             @Override
@@ -636,7 +649,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     /*
     Metodos de la interfaz OnSettingContact
      */
-
     @Override
     public void setFavorited(Contact contact) {
         contact.setFavorite(true);
@@ -696,8 +708,8 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         startActivityForResult(i, EDIT_CONTACT_CODE);
     }
 
-    //Metodos para realizar llamadas.
 
+    //Metodos para realizar llamadas.
     @Override
     public void callContact(final Contact contact) {
         if (contact.getPhoneNumbers() == null || contact.getPhoneNumbers().size() == 0){
@@ -751,6 +763,10 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         contactsRecentAdapter.notifyItemInserted(0);
         contactsRecentAdapter.notifyItemRangeChanged(0, contactsRecent_list.size());
         contactsRecentAdapter.notifyDataSetChanged();
+    }
+
+    public boolean isLandscape(){
+        return getResources().getConfiguration().orientation != Configuration.ORIENTATION_PORTRAIT;
     }
 
     @Override
