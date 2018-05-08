@@ -77,9 +77,7 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
     private static ArrayList<Contact> contactsFav_list = new ArrayList<>();
     private static ArrayList<Contact> contactsRecent_list = new ArrayList<>();
 
-    protected static ArrayList<Contact> contacts_list_query;
-    private static ArrayList<Contact> contactsFav_list_query;
-    private static ArrayList<Contact> contactsRecent_list_query;
+    protected static ArrayList<Contact> contacts_list_query = new ArrayList<>();
 
     private ContactsDefaultAdapter contactsDefaultAdapter;
     private ContactsFavoritesAdapter contactsFavoritesAdapter;
@@ -104,8 +102,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 contactsFav_list = carryBoy.getContactsFav_list();
                 contactsRecent_list = carryBoy.getContactsRecent_list();
                 contacts_list_query = carryBoy.getContacts_list_query();
-                contactsFav_list_query = carryBoy.getContactsFav_list_query();
-                contactsRecent_list_query = carryBoy.getContactsRecent_list_query();
             }
         }
 
@@ -146,8 +142,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         carryBoy.setContactsFav_list(contactsFav_list);
         carryBoy.setContactsRecent_list(contactsRecent_list);
         carryBoy.setContacts_list_query(contacts_list_query);
-        carryBoy.setContactsFav_list_query(contactsFav_list_query);
-        carryBoy.setContactsRecent_list_query(contactsRecent_list_query);
         outState.putParcelable(KEY_SAVED_INSTANCE_STATE, carryBoy);
         super.onSaveInstanceState(outState);
     }
@@ -162,8 +156,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
             contactsFav_list = carryBoy.getContactsFav_list();
             contactsRecent_list = carryBoy.getContactsRecent_list();
             contacts_list_query = carryBoy.getContacts_list_query();
-            contactsFav_list_query = carryBoy.getContactsFav_list_query();
-            contactsRecent_list_query = carryBoy.getContactsRecent_list_query();
         }
     }
 
@@ -493,14 +485,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
                 if(image_uri != null){
                     contact.setProfileImage(Uri.parse(image_uri));
                 }
-//                if (image_uri != null) {
-//                    try {
-//                        bitmap = MediaStore.Images.Media .getBitmap(this.getContentResolver(), Uri.parse(image_uri));
-//                    }catch (FileNotFoundException e) {
-//                        e.printStackTrace(); }
-//                    catch (IOException e) {
-//                        e.printStackTrace(); }
-//                }
 
                 if(hasPhoneNumber >0){
                     contact.setName(name);
