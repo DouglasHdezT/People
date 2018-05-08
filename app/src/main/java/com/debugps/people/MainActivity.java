@@ -106,6 +106,10 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         }
 
         setAdapters();
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.tab_list_container_main, mainFragment);
+        fragmentTransaction.commit();
     }
 
     @Override
@@ -117,10 +121,6 @@ public class MainActivity extends AppCompatActivity implements ContactListFragme
         }
 
         contactsDefaultAdapter.notifyItemRangeChanged(0, contacts_list.size());
-
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.tab_list_container_main, mainFragment);
-        fragmentTransaction.commit();
 
         addContactButton.setOnClickListener(new View.OnClickListener() {
             @Override
